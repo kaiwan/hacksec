@@ -1,0 +1,36 @@
+mmap_exploit demo
+=================
+Ref: "Kernel Driver mmap Handler Exploitation" :
+ https://labs.mwrinfosecurity.com/assets/BlogFiles/mwri-mmap-exploitation-whitepaper-2017-09-18.pdf
+
+32-bit only; tested on a Raspberry Pi 3 Model B+.
+
+*Highly* recommend you first read this article fully. Brief TOO below.
+----------------------------------------------------------------
+Procedure:
+1. Build the demo mmap_baddrv driver
+make
+
+2. Load up the driver, create the device nodes it requires
+Can do this manually in the usual manner (insmod, mknod, ...),
+it's just a lot easier with our wrapper script:
+sudo ./load_drv.sh -c mmap_baddrv
+
+3. Run the exploit:
+./userspc_mmap /dev/mmap_baddrv 1900000000
+
+----------------------------------------------------------------
+TOO - Theory Of Operation
+----------------------------------------------------------------
+- Depend upon a buggy / weak driver that uses the mmap() in such a way that we
+can exploit; thew typical case being insufficient or buggy (IoF - integer
+ overflow) validity checking within the driver's mmap method
+- Once found, we develop a userspace app that can fire off an mmap (on the
+buggy / weak driver's mmap method); this way, we effectively perform an mmap()
+of the *entire* kernel address space! Now we have access to all kernel memory
+- Search for the 'struct cred' structure instances in memory (by searching for a
+repeating pattern of the same UID value some 8 times!); once found, replace all
+8 [e]uid,[e]gid, etc values with zeroes
+- If getuid() returns 0, we have root! 
+Done.
+----------------------------------------------------------------

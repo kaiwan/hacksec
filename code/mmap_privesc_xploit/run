@@ -1,0 +1,4 @@
+./userspc_mmap /dev/mmap_baddrv 1900000000
+ # len = 1,900,000,000 ~= 1812 MB ~= 1.77 GB
+ # if it fails w/ 'out of mem', lower the length
+#./userspc_mmap /dev/mmap_baddrv 1974342780
