@@ -1,6 +1,6 @@
 # Makefile
 #  for build on the Raspberry Pi [3+]
-ALL := arm_bof_vuln_reg arm_bof_vuln_reg_stripped arm_bof_vuln_fortified arm_bof_vuln_stackprot arm_bof_vuln_lessprot
+ALL := arm_bof_vuln_reg arm_bof_vuln_reg_dbg arm_bof_vuln_reg_stripped arm_bof_vuln_fortified arm_bof_vuln_stackprot arm_bof_vuln_lessprot
 CC=${CROSS_COMPILE}gcc
 LD=${CROSS_COMPILE}ld
 STRIP=${CROSS_COMPILE}strip
@@ -22,6 +22,8 @@ all: ${ALL}
 
 arm_bof_vuln_reg: arm_bof_vuln.c
 	${CC} ${CFLAGS_REG} arm_bof_vuln.c -o arm_bof_vuln_reg
+arm_bof_vuln_reg_dbg: arm_bof_vuln.c
+	${CC} ${CFLAGS_REG_DBG} arm_bof_vuln.c -o arm_bof_vuln_reg_dbg
 arm_bof_vuln_reg_stripped: arm_bof_vuln.c
 	${CC} ${CFLAGS_REG} arm_bof_vuln.c -o arm_bof_vuln_reg_stripped
 	${STRIP} --strip-all arm_bof_vuln_reg_stripped
