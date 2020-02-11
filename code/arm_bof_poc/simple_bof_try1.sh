@@ -1,40 +1,64 @@
 #!/bin/bash
 name=$(basename "$0")
-PUT=arm_bof_vuln  # Program Under Test
+CHKSEC=../tools_sec/checksec.sh/checksec
+SKIP_CHKSEC=0
 
-is_stack_guarded()
+checkit()
 {
-echo -n " $1 : Is Stack Guarded? "
-readelf -s ${1} |grep -q __stack_chk_guard && echo "Yes!" || echo "Nope"
+[ $# -ne 1 ] && return
+
+# the readelf check below isn't reliable??
+#echo -n "
+#$1 : Is Stack Guarded? "
+#readelf -s ${1} |grep -q __stack_chk_guard && echo "Yes!" || echo "Nope"
+
+[ ${SKIP_CHKSEC} -eq 0 ] && {
+  echo "checksec.sh:"
+  ${CHKSEC} -f ${1}
+}
 }
 
-test1()
+#------------ t e s t _ a r m _ b o f ----------------------------------
+# Parameters:
+#  $1 : pathname of PUT
+#  $2 : message to print
+test_arm_bof()
 {
+[ $# -ne 2 ] && return
+local PUT=${1}         # Program Under Test
+[ ! -f ${PUT} ] && {
+  echo "${name}: binary executable \"${PUT}\" missing.."
+  return
+}
+
+echo "
+-----------------------------------------------------------------------
+${2}
+-----------------------------------------------------------------------"
+checkit ${PUT}
+
 local re
-echo "1. Run BOF on ${PUT}? [y/N] "
+echo -n "Run BOF on ${PUT}? [y/N] "
 read re
 [ "${re}" != "y" -a "${re}" != "Y" ] && return
+
 perl -e 'print "A"x12 . "B"x4 . "C"x4' | ./${PUT}
 }
 
 
 ## 'main'
-[ ! -f ${PUT} ] && {
-  echo "${name}: binary executable \"${PUT}\" missing.."
-  exit 1
+[ ! -f ${CHKSEC} ] && {
+  echo "${name}: shell script \"${CHKSEC}\" missing.."
+  SKIP_CHKSEC=1
 }
 
-is_stack_guarded ${PUT}
-test1
+PUT=./arm_bof_vuln_reg
+test_arm_bof ${PUT} "Test #1 : ${PUT} : built with default gcc flags"
 
-echo
-PUT=arm_bof_vuln_stackprot
-echo "2. BOF on ${PUT}:"
-is_stack_guarded ${PUT}
-perl -e 'print "A"x12 . "B"x4 . "C"x4' | ./${PUT}
+PUT=./arm_bof_vuln_reg_stripped
+test_arm_bof ${PUT} "Test #2 : ${PUT} : built with default gcc flags and stripped"
 
-echo
-PUT=arm_bof_vuln_fortified
-echo "3. BOF on ${PUT}:"
-is_stack_guarded ${PUT}
-perl -e 'print "A"x12 . "B"x4 . "C"x4' | ./${PUT}
+PUT=./arm_bof_vuln_lessprot
+test_arm_bof ${PUT} "Test #3 : ${PUT} : built with -z execstack,-fno-stack-protector gcc flags"
+
+exit 0
