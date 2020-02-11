@@ -53,12 +53,18 @@ perl -e 'print "A"x12 . "B"x4 . "C"x4' | ./${PUT}
 }
 
 PUT=./arm_bof_vuln_reg
-test_arm_bof ${PUT} "Test #1 : ${PUT} : built with default gcc flags"
+test_arm_bof ${PUT} "Test #1 : ${PUT} : built with RPi default gcc flags"
 
 PUT=./arm_bof_vuln_reg_stripped
-test_arm_bof ${PUT} "Test #2 : ${PUT} : built with default gcc flags and stripped"
+test_arm_bof ${PUT} "Test #2 : ${PUT} : built with RPi default gcc flags and stripped"
+
+PUT=./arm_bof_vuln_fortified
+test_arm_bof ${PUT} "Test #3 : ${PUT} : built with RPi gcc with fortification ON"
+
+PUT=./arm_bof_vuln_stackprot
+test_arm_bof ${PUT} "Test #4 : ${PUT} : built with RPi gcc with stack prot ON"
 
 PUT=./arm_bof_vuln_lessprot
-test_arm_bof ${PUT} "Test #3 : ${PUT} : built with -z execstack,-fno-stack-protector gcc flags"
+test_arm_bof ${PUT} "Test #5 : ${PUT} : built with RPi gcc with -z execstack,-fno-stack-protector gcc flags"
 
 exit 0
