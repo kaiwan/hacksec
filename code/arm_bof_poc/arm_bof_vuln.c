@@ -12,7 +12,7 @@
 static void secret_func(void)
 {  
 	char b[25];
-	snprintf(b, 25, " CTF Secret 0x%x\n", (unsigned int)&secret_func);
+	snprintf(b, 25, " CTF Secret 0x%lx\n", (unsigned long)&secret_func);
 	printf("YAY! Entered secret_func() !\n%s", b);
 }
 
@@ -26,7 +26,5 @@ int main (int argc, char **argv)
 {
 	foo(argv[1]);
 	printf("Ok, about to exit...\n");
-	exit (EXIT_SUCCESS);
+	exit(EXIT_SUCCESS);
 }
-
-/* vi: ts=8 */

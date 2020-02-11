@@ -1,20 +1,24 @@
 # Makefile
-ALL := arm_bof_vuln arm_bof_vuln_fortified arm_bof_vuln_stackprot
+ALL := arm_bof_vuln_reg arm_bof_vuln_reg_stripped arm_bof_vuln_lessprot
 CC=${CROSS_COMPILE}gcc
 LD=${CROSS_COMPILE}ld
+STRIP=${CROSS_COMPILE}strip
+
 DBG=-g -ggdb -gdwarf-4 -O0
-CFLAGS=${DBG} -Wall -Wextra
-CFLAGS_FORT=-D_FORTIFY_SOURCE=2 -O2 -Wall -Wextra
-CFLAGS_STKPROT=-fstack-protector-strong -O2 -Wall -Wextra
+CFLAGS_REG=-Wall
+CFLAGS_REG_DBG=${DBG} -Wall #-Wextra
+CFLAGS_LESSPROT=-z execstack -fno-stack-protector -Wall
+  # -z execstack: ld(1) (linker) opt to enable stack execution
 
 all: ${ALL}
 
-arm_bof_vuln: arm_bof_vuln.c
-	${CC} ${CFLAGS} arm_bof_vuln.c -o arm_bof_vuln
-	#${CC} ${CFLAGS} -o $@ $<
-arm_bof_vuln_fortified: arm_bof_vuln.c
-	${CC} ${CFLAGS_FORT} arm_bof_vuln.c -o arm_bof_vuln_fortified
-arm_bof_vuln_stackprot: arm_bof_vuln.c
-	${CC} -g ${CFLAGS_STKPROT} arm_bof_vuln.c -o arm_bof_vuln_stackprot
+arm_bof_vuln_reg: arm_bof_vuln.c
+	${CC} ${CFLAGS_REG} arm_bof_vuln.c -o arm_bof_vuln_reg
+arm_bof_vuln_reg_stripped: arm_bof_vuln.c
+	${CC} ${CFLAGS_REG} arm_bof_vuln.c -o arm_bof_vuln_reg_stripped
+	${STRIP} --strip-all arm_bof_vuln_reg_stripped
+arm_bof_vuln_lessprot: arm_bof_vuln.c
+	${CC} ${CFLAGS_LESSPROT} arm_bof_vuln.c -o arm_bof_vuln_lessprot
+
 clean:
 	rm -fv ${ALL} *.o
