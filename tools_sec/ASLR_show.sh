@@ -6,12 +6,10 @@
 # Created      : 15Mar2017
 # 
 # Author:
-# Kaiwan N Billimoria
+# (c) Kaiwan N Billimoria
 # kaiwan -at- kaiwantech -dot- com
 # kaiwanTECH
-# 
-# License:
-# MIT License.
+# License: MIT
 name=$(basename $0)
 
 test_ASLR_abit()
