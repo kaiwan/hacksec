@@ -1,24 +1,16 @@
 /*
- * .c
- * 
- * History:
+ * iof_try.c
+ * Buggy demo for the IoF (integer overflow) bug..
  *
  * Author(s) : 
  * Kaiwan N Billimoria
  *  <kaiwan -at- kaiwantech -dot- com>
- *
  * License(s): MIT permissive
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
-
-/*---------------- Macros -------------------------------------------*/
-
-/*---------------- Typedef's, constants, etc ------------------------*/
-
-/*---------------- Functions ----------------------------------------*/
 
 int main(int argc, char **argv)
 {
@@ -48,5 +40,3 @@ int main(int argc, char **argv)
 	// do_foo(off);
 	exit(EXIT_SUCCESS);
 }
-
-/* vi: ts=8 */

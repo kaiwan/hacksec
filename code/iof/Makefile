@@ -11,4 +11,4 @@ iof_try: iof_try.c
 iof_ok: iof_ok.c
 	${CC} ${CFLAGS_DBG} iof_ok.c -o iof_ok
 clean:
-	rm -f *.o ${ALL} 2>/dev/null
+	rm -fv *.o ${ALL} 2>/dev/null

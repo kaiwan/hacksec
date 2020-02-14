@@ -1,10 +1,10 @@
 /*
  * iof_ok.c
- * 
+ * Correct prg; for an IoF - integer overflow - demo.
+ *
  * Author(s) : 
  * Kaiwan N Billimoria
  *  <kaiwan -at- kaiwantech -dot- com>
- *
  * License(s): MIT permissive
  */
 #include <stdio.h>
@@ -40,5 +40,3 @@ int main(int argc, char **argv)
 	// do_foo(off);
 	exit(EXIT_SUCCESS);
 }
-
-/* vi: ts=8 */
