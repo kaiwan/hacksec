@@ -6,7 +6,7 @@
  *
  * Simple demo char device driver for memory device. Registers itself as a 'misc'
  * driver.. Here, the feature is the buggy! 'mmap' implementation.
- * This lack of valdity checking (by default, unless we pass module param 'check=1'),
+ * A lack of valdity checking (by default, unless we pass module param 'check=1'),
  * is the root cause of the exploit being possible.
  * Of course, this exploit will easily be defeated by even minimal 'hardening':
  * proper permissions on the device file (like 0664), presence of LSMs (like
@@ -47,8 +47,8 @@ static int mmap_bad(struct file *filp, struct vm_area_struct *vma)
 	 */
 	if (check == 1) {
 #define MAX_MMAP_PAGES 30 	// unit: pages
-		/* Validity check: there is a hard limit (our own define, MAX_MMAP_OFFSET) 
-		 * pages that the userspace app can mmap.
+		/* Validity check: there is a hard limit (our own define, MAX_MMAP_PAGES)
+		 * on the # of pages that the userspace app can mmap at a time
 		 */
 		if (len > (MAX_MMAP_PAGES*PAGE_SIZE)) {
 			pr_notice("%s: mmap length too large! (artificial max of %d pages here)\n",
@@ -91,7 +91,7 @@ out:
 /* Minor-specific open routines */
 static struct file_operations mmap_baddrv_fops = {
 	.llseek =	no_llseek,
-	.mmap   =       mmap_bad,
+	.mmap   =   mmap_bad,
 };
 
 static struct miscdevice mmap_baddrv_miscdev = {
