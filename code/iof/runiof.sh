@@ -1,3 +1,9 @@
+#!/bin/sh
+# runiof.sh
+# 2^32 = 4,294,967,296
+# So for a signed int, the range is half of that, i.e.
+#  -2,147,483,648 to +2,147,483,648
+
 echo "---------- Buggy iof_try --------------"
 echo "Ok: ./iof_try 2147483647"
 ./iof_try 2147483647
