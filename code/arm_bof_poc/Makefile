@@ -19,7 +19,7 @@ CFLAGS_STACKPROT=-fstack-protector-strong -O2 -Wall #-Wextra
 #---
 
 CFLAGS_LESSPROT=-z execstack -fno-stack-protector -Wall
-  # -z execstack: ld(1) (linker) opt to enable stack execution
+  # -z execstack: ld(1) (linker) option to enable stack execution
 
 all: ${ALL}
 
