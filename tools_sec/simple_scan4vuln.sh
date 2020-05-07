@@ -9,11 +9,8 @@
 # Kaiwan N Billimoria
 # kaiwan -at- kaiwantech -dot- com
 # kaiwanTECH
-# 
-# License:
-# MIT License.
+# License: MIT
 name=$(basename $0)
-
 VERBOSE=0
 STARTDIR=.
 TMP=mytmp
@@ -26,10 +23,10 @@ gcSCAN_MODE=1
 # set to cross-compiler prefix, as required
 CXX=""  # arm-none-linux-gnueabi-
 
-# the 'bad' boys; separate them with a '|' symbol (for the egrep)
+# the 'bad' boy functions; separate them with a '|' symbol (for the egrep)
 BADFUNCS_BIN="gets|strcat|strlen|strcmp|strcpy|sprintf|scanf|realpath|getopt|getpass|streadd|strecpy|strtrns|getwd|system"
 #BADFUNCS_BIN="main|_start|printf|gets|strlen|strcmp|strcpy|sprintf|scanf"
-BADFUNCS_CSRC="gets|strcat|strlen|strcmp|strcpy|sprintf|scanf|realpath|getopt|getpass|streadd|strecpy|strtrns|getwd|system"
+BADFUNCS_CSRC="gets\(|strcat\(|strlen\(|strcmp\(|strcpy\(|sprintf\(|scanf\(|realpath\(|getopt\(|getpass\(|streadd\(|strecpy\(|strtrns\(|getwd\(|system\("
 #BADFUNCS_CSRC="main|_start|printf|gets|strlen|strcmp|strcpy|sprintf|scanf"
 
 # $1 = file to "scan"
