@@ -9,15 +9,20 @@
  *
  * 1) One way: direct: by running it like this:
  *  perl -e 'print "A"x12 . "B"x4 . "\xc4\x04\x01\x00"' | ./arm_bof_vuln_reg
+ *
+ * Of course, the address being passed here (in (1) and (2) via the file input2_secretfunc)
+ * is one value I encountered (0x000104c4); you should use nm(1) to lookup the
+ * precise address of the 'secret' function and use that value...
+ *
  * 2) Another way:
  *  ./arm_bof_vuln_reg < input2_secretfunc
  * 3) Third way: via running it interactively using gdb
  * (Refer the 'BOF_ROP_ARM.pdf document provided for details).
  *
- * Kaiwan NB
+ * Kaiwan N Billimoria
  * kaiwanTECH (Designer Graphix)
  *
- * Original Ref: YouTube tut:
+ * Credits: Original Ref: YouTube tut:
  *  https://www.youtube.com/watch?v=7P9lnpAZy60
  */
 #include <stdio.h>
