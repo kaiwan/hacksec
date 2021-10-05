@@ -69,7 +69,7 @@ esac
 if [ ! -f ${CHKSEC} ] ; then
 echo "${name}: Warning! shell script \"${CHKSEC}\" missing..(will skip)"
   RUN_CHKSEC=0
-else
+elif [ ${RUN_CHKSEC} -eq 1 ] ; then
   echo "checksec: FYI, the meaning of the columns:
  'Fortified'   = # of functions that are actually fortified
  'Fortifiable' = # of functions that can be fortified"
