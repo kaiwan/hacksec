@@ -1,6 +1,6 @@
 # Makefile
 #  for build and test on an ARM device (eg.Raspberry Pi [3+]/BeagleBone/...)
-ALL := arm_bof_vuln_reg arm_bof_vuln_reg_dbg arm_bof_vuln_reg_stripped arm_bof_vuln_fortified arm_bof_vuln_stackprot arm_bof_vuln_lessprot
+ALL := bof_vuln_reg bof_vuln_reg_dbg bof_vuln_reg_stripped bof_vuln_fortified bof_vuln_stackprot bof_vuln_lessprot
 CC=${CROSS_COMPILE}gcc
 LD=${CROSS_COMPILE}ld
 STRIP=${CROSS_COMPILE}strip
@@ -23,19 +23,19 @@ CFLAGS_LESSPROT=-z execstack -fno-stack-protector -Wall
 
 all: ${ALL}
 
-arm_bof_vuln_reg: arm_bof_vuln.c
-	${CC} ${CFLAGS_REG} arm_bof_vuln.c -o arm_bof_vuln_reg
-arm_bof_vuln_reg_dbg: arm_bof_vuln.c
-	${CC} ${CFLAGS_REG_DBG} arm_bof_vuln.c -o arm_bof_vuln_reg_dbg
-arm_bof_vuln_reg_stripped: arm_bof_vuln.c
-	${CC} ${CFLAGS_REG} arm_bof_vuln.c -o arm_bof_vuln_reg_stripped
-	${STRIP} --strip-all arm_bof_vuln_reg_stripped
-arm_bof_vuln_fortified: arm_bof_vuln.c
-	${CC} ${CFLAGS_FORT} arm_bof_vuln.c -o arm_bof_vuln_fortified
-arm_bof_vuln_stackprot: arm_bof_vuln.c
-	${CC} ${CFLAGS_STACKPROT} arm_bof_vuln.c -o arm_bof_vuln_stackprot
-arm_bof_vuln_lessprot: arm_bof_vuln.c
-	${CC} ${CFLAGS_LESSPROT} arm_bof_vuln.c -o arm_bof_vuln_lessprot
+bof_vuln_reg: bof_vuln.c
+	${CC} ${CFLAGS_REG} bof_vuln.c -o bof_vuln_reg
+bof_vuln_reg_dbg: bof_vuln.c
+	${CC} ${CFLAGS_REG_DBG} bof_vuln.c -o bof_vuln_reg_dbg
+bof_vuln_reg_stripped: bof_vuln.c
+	${CC} ${CFLAGS_REG} bof_vuln.c -o bof_vuln_reg_stripped
+	${STRIP} --strip-all bof_vuln_reg_stripped
+bof_vuln_fortified: bof_vuln.c
+	${CC} ${CFLAGS_FORT} bof_vuln.c -o bof_vuln_fortified
+bof_vuln_stackprot: bof_vuln.c
+	${CC} ${CFLAGS_STACKPROT} bof_vuln.c -o bof_vuln_stackprot
+bof_vuln_lessprot: bof_vuln.c
+	${CC} ${CFLAGS_LESSPROT} bof_vuln.c -o bof_vuln_lessprot
 
 clean:
 	rm -fv ${ALL} *.o
