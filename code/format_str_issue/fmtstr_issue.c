@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s param\n", argv[0]);
@@ -16,5 +16,3 @@ int main (int argc, char **argv)
 	printf(argv[1]);
 	exit (EXIT_SUCCESS);
 }
-
-/* vi: ts=4 */

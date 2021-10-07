@@ -6,7 +6,7 @@
 # 'hacksec', (c) Kaiwan NB, kaiwanTECH ; license: MIT
 name=$(basename $0)
 
-echo "${name}: background (TOO)::
+echo "${name}: background (TOO - Theory Of Operation)::
 A *signed* integer on 64-bit ranges from (min,max) (-2,147,483,648, +2,147,483,647)
 "
 

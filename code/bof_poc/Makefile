@@ -1,5 +1,8 @@
 # Makefile
-#  for build and test on an ARM device (eg.Raspberry Pi [3+]/BeagleBone/...)
+#  for build and test on an ARM device (eg.Raspberry Pi 0W / [3+] / 4 / BeagleBone/...)
+#  or an x86_64 system
+# Part of my 'hacksec' github repo:
+# https://github.com/kaiwan/hacksec
 ALL := bof_vuln_reg bof_vuln_reg_dbg bof_vuln_reg_stripped bof_vuln_fortified bof_vuln_stackprot bof_vuln_lessprot
 CC=${CROSS_COMPILE}gcc
 LD=${CROSS_COMPILE}ld

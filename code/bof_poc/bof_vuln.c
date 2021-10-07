@@ -1,6 +1,8 @@
 /*
  * arm_bof.c
  * BoF ROP PoC (on an ARM-32)
+ * Part of my 'hacksec' github repo:
+ * https://github.com/kaiwan/hacksec
  *
  * The purpose here is to demonstrate, in three ways, how a simple ROP (Return
  * Oriented Programming) attack - triggered via buffer overflow (BoF) to the

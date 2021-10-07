@@ -1,5 +1,7 @@
 #!/bin/bash
 # simple_bof_try1.sh
+# Part of my 'hacksec' github repo:
+# https://github.com/kaiwan/hacksec
 name=$(basename "$0")
 CHKSEC=../../tools_sec/checksec.sh/checksec
 RUN_CHKSEC=0
