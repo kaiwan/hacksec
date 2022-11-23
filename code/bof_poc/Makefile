@@ -3,12 +3,12 @@
 #  or an x86_64 system
 # Part of my 'hacksec' github repo:
 # https://github.com/kaiwan/hacksec
-ALL := bof_vuln_reg bof_vuln_reg_dbg bof_vuln_reg_stripped bof_vuln_fortified bof_vuln_stackprot bof_vuln_lessprot
+ALL := bof_vuln_reg bof_vuln_reg_dbg bof_vuln_reg_stripped bof_vuln_fortified bof_vuln_stackprot bof_vuln_lessprot bof_vuln_lessprot_dbg
 CC=${CROSS_COMPILE}gcc
 LD=${CROSS_COMPILE}ld
 STRIP=${CROSS_COMPILE}strip
 
-DBG=-g -ggdb -gdwarf-4 -O0
+DBG=-g -O0
 CFLAGS_REG=-Wall
 CFLAGS_REG_DBG=${DBG} -Wall #-Wextra
 
@@ -21,7 +21,7 @@ CFLAGS_STACKPROT=-fstack-protector-strong -O2 -Wall #-Wextra
  # ??
 #---
 
-CFLAGS_LESSPROT=-z execstack -fno-stack-protector -Wall
+CFLAGS_LESSPROT=-z execstack -fno-stack-protector -no-pie -Wall
   # -z execstack: ld(1) (linker) option to enable stack execution
 
 all: ${ALL}
@@ -39,6 +39,8 @@ bof_vuln_stackprot: bof_vuln.c
 	${CC} ${CFLAGS_STACKPROT} bof_vuln.c -o bof_vuln_stackprot
 bof_vuln_lessprot: bof_vuln.c
 	${CC} ${CFLAGS_LESSPROT} bof_vuln.c -o bof_vuln_lessprot
+bof_vuln_lessprot_dbg: bof_vuln.c
+	${CC} ${DBG} ${CFLAGS_LESSPROT} bof_vuln.c -o bof_vuln_lessprot_dbg
 
 clean:
 	rm -fv ${ALL} *.o
