@@ -27,6 +27,17 @@ if [ "$1" != "-a" -a "$1" != "-x" ]; then
   exit 1
 fi
 
+# Ensure that ASLR is Off
+aslr=$(cat /proc/sys/kernel/randomize_va_space)
+[ ${aslr} -ne 0 ] && {
+	echo "*** WARNING ***
+ASLR is ON; prg may not work as expected!
+Will attempt to turn it OFF now ...
+"
+sudo sh -c "echo 0 > /proc/sys/kernel/randomize_va_space"
+aslr=$(cat /proc/sys/kernel/randomize_va_space)
+[ ${aslr} -ne 0 ] && echo "*** WARNING *** ASLR still ON" || echo "Ok, it's now Off"
+
 [ "$1" = "-x" ] && PUT=./bof_vuln_lessprot
  # Notice! on x86_64, the 'regular' program is caught via
  # '*** stack smashing detected ***'
