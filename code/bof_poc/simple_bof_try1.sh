@@ -4,7 +4,7 @@
 # https://github.com/kaiwan/hacksec
 name=$(basename "$0")
 CHKSEC=../../tools_sec/checksec.sh/checksec
-RUN_CHKSEC=0
+RUN_CHKSEC=1
 
 checkit()
 {
@@ -77,6 +77,17 @@ elif [ ${RUN_CHKSEC} -eq 1 ] ; then
  'Fortifiable' = # of functions that can be fortified"
 fi
 
+# Ensure that ASLR is Off
+aslr=$(cat /proc/sys/kernel/randomize_va_space)
+[ ${aslr} -ne 0 ] && {
+	echo "*** WARNING ***
+ASLR is ON; prg may not work as expected!
+Will attempt to turn it OFF now ...
+"
+sudo sh -c "echo 0 > /proc/sys/kernel/randomize_va_space"
+aslr=$(cat /proc/sys/kernel/randomize_va_space)
+[ ${aslr} -ne 0 ] && echo "*** WARNING *** ASLR still ON" || echo "Ok, it's now Off"
+
 # PUT = Program Under Test
 PUT=./bof_vuln_reg
 test_bof ${PUT} "Test #1 : ${PUT} : built with system's default gcc flags"
@@ -92,5 +103,8 @@ test_bof ${PUT} "Test #4 : ${PUT} : built with system's gcc with stack prot ON"
 
 PUT=./bof_vuln_lessprot
 test_bof ${PUT} "Test #5 : ${PUT} : built with system's gcc with -z execstack,-fno-stack-protector flags"
+
+PUT=./bof_vuln_lessprot_dbg
+test_bof ${PUT} "Test #5 : ${PUT} : built with system's gcc with -g -O0 -z execstack,-fno-stack-protector flags"
 
 exit 0
