@@ -87,6 +87,7 @@ Will attempt to turn it OFF now ...
 sudo sh -c "echo 0 > /proc/sys/kernel/randomize_va_space"
 aslr=$(cat /proc/sys/kernel/randomize_va_space)
 [ ${aslr} -ne 0 ] && echo "*** WARNING *** ASLR still ON" || echo "Ok, it's now Off"
+}
 
 # PUT = Program Under Test
 PUT=./bof_vuln_reg
