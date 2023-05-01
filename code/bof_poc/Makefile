@@ -15,9 +15,9 @@ CFLAGS_REG_DBG=${DBG} -Wall #-Wextra
 #--- Fortification and stackprot options; actually works, preventing our
 # simple BOF
 CFLAGS_FORT=-D_FORTIFY_SOURCE=2 -O2 -Wall #-Wextra
- # Pecuiliar : with this, checksec says its Not fortified, but stack is protected
+ # Pecuiliar : with this (above line), checksec says its Not fortified, but stack is protected
 CFLAGS_STACKPROT=-fstack-protector-strong -O2 -Wall #-Wextra
- # Pecuiliar again! with this, checksec says its fortified, but stack is Not protected
+ # Pecuiliar again! with this (above line), checksec says its fortified, but stack is Not protected
  # ??
 #---
 
