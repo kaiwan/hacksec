@@ -43,19 +43,23 @@ local PUT=${1}         # Program Under Test
 echo "
 -----------------------------------------------------------------------
 ${2}
+$(ls -lh ${PUT})
 -----------------------------------------------------------------------"
 checkit ${PUT}
 
 local re
-echo -n "Run BOF on ${PUT}? [y/N] "
+echo -n "Run BOF on ${PUT}? [Y/n] "
 read re
-[[ "${re}" != "y" -a "${re}" != "Y" ]] && return
+[[ "${re}" = "n" || "${re}" = "N" ]] && return
 
+set +e # turn off 'strict fail'
+# Run the PUT overflowing the stack buffer (it's 12 bytes, send 20)
 perl -e 'print "A"x12 . "B"x4 . "C"x4' | ./${PUT}
 
 # Our program ${PUT} will terminate with an exit status:
 # Exit codes ref: https://www.geeksforgeeks.org/exit-codes-in-c-c-with-examples/
 local stat=$?
+set -e # turn on 'strict fail'
 echo "stat=${stat}"
 case ${stat} in
    0) echo "*** All OK ***" ;;
@@ -70,6 +74,11 @@ case ${stat} in
  159|153) echo "!!! terminated via SIGXFSZ !!!" ;;
  *) echo "!!! terminated with exit status ${stat} !!!" ;;
 esac
+}
+
+askfornext()
+{
+  read -p "<< Press [Enter] to continue, ^C to abort... >>"
 }
 
 
@@ -97,21 +106,26 @@ aslr=$(cat /proc/sys/kernel/randomize_va_space)
 
 # PUT = Program Under Test
 PUT=./bof_vuln_reg
-test_bof ${PUT} "Test #1 : ${PUT} : built with system's default gcc flags"
+test_bof ${PUT} "Test #1 : program built with system's default gcc flags"
+askfornext
 
 PUT=./bof_vuln_reg_stripped
-test_bof ${PUT} "Test #2 : ${PUT} : built with system's default gcc flags and stripped"
+test_bof ${PUT} "Test #2 : program built with system's default gcc flags and stripped"
+askfornext
 
 PUT=./bof_vuln_fortified
-test_bof ${PUT} "Test #3 : ${PUT} : built with system's gcc with fortification ON"
+test_bof ${PUT} "Test #3 : program built with system's gcc with fortification ON"
+askfornext
 
 PUT=./bof_vuln_stackprot
-test_bof ${PUT} "Test #4 : ${PUT} : built with system's gcc with stack prot ON"
+test_bof ${PUT} "Test #4 : program built with system's gcc with stack prot ON"
+askfornext
 
 PUT=./bof_vuln_lessprot
-test_bof ${PUT} "Test #5 : ${PUT} : built with system's gcc with -z execstack,-fno-stack-protector flags"
+test_bof ${PUT} "Test #5 : program built with system's gcc with -z execstack,-fno-stack-protector flags"
+askfornext
 
 PUT=./bof_vuln_lessprot_dbg
-test_bof ${PUT} "Test #5 : ${PUT} : built with system's gcc with -g -O0 -z execstack,-fno-stack-protector flags"
+test_bof ${PUT} "Test #5 : program built with system's gcc with -g -O0 -z execstack,-fno-stack-protector flags"
 
 exit 0
