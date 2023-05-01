@@ -1,14 +1,11 @@
 #!/bin/bash
 # scan4vuln.sh
-# (Very) simple scanner.. try D Wheeler's 'flawfinder' too.
+# (Very) simple scanner, amateurish attempt
+# Try D Wheeler's 'flawfinder' too; it's much better!
 #
-# Last Updated : 28Feb2017
-# Created      : 28Feb2017
-# 
 # Author:
-# Kaiwan N Billimoria
+# Kaiwan N Billimoria, kaiwanTECH
 # kaiwan -at- kaiwantech -dot- com
-# kaiwanTECH
 # License: MIT
 name=$(basename $0)
 VERBOSE=0
@@ -20,14 +17,13 @@ TMP=mytmp
 # Set to 1 to scan ONLY C source files (incl *.[chsS])
 gcSCAN_MODE=1
 
-# set to cross-compiler prefix, as required
-CXX=""  # arm-none-linux-gnueabi-
-
+#------ MAINTAIN These
 # the 'bad' boy functions; separate them with a '|' symbol (for the egrep)
 BADFUNCS_BIN="gets|strcat|strlen|strcmp|strcpy|sprintf|scanf|realpath|getopt|getpass|streadd|strecpy|strtrns|getwd|system"
-#BADFUNCS_BIN="main|_start|printf|gets|strlen|strcmp|strcpy|sprintf|scanf"
-BADFUNCS_CSRC="gets\(|strcat\(|strlen\(|strcmp\(|strcpy\(|sprintf\(|scanf\(|realpath\(|getopt\(|getpass\(|streadd\(|strecpy\(|strtrns\(|getwd\(|system\("
-#BADFUNCS_CSRC="main|_start|printf|gets|strlen|strcmp|strcpy|sprintf|scanf"
+
+# Fmt: <func_name>[ ]*\(  : search for function followed by optional spaces and '('
+BADFUNCS_CSRC="gets[ ]*\(|strcat[ ]*\(|strlen[ ]*\(|strcmp[ ]*\(|strcpy[ ]*\(|sprintf[ ]*\(|scanf[ ]*\(|realpath[ ]*\(|getopt[ ]*\(|getpass[ ]*\(|streadd[ ]*\(|strecpy[ ]*\(|strtrns[ ]*\(|getwd[ ]*\(|system[ ]*\("
+#----------
 
 # $1 = file to "scan"
 scanit()
@@ -36,15 +32,15 @@ scanit()
  if [ ${gcSCAN_MODE} -eq 0 ] ; then
    # Note! nm fails for stripped binaries, use objdump
    file ${1} | grep -q "not stripped" && {
-     ${CXX}nm ${1} |grep " [Tt] " |egrep "${BADFUNCS_BIN}"
-     ${CXX}objdump -d ${1} |egrep "${BADFUNCS_BIN}"
-     #${CXX}readelf -s ${1} |egrep "${BADFUNCS_BIN}"
+     ${CROSS_COMPILE}nm ${1} |grep " [Tt] " |egrep "${BADFUNCS_BIN}"
+     ${CROSS_COMPILE}objdump -d ${1} |egrep "${BADFUNCS_BIN}"
+     #${CROSS_COMPILE}readelf -s ${1} |egrep "${BADFUNCS_BIN}"
    } || {
-     ${CXX}objdump -d ${1} |egrep "${BADFUNCS_BIN}"
-     #${CXX}readelf -s ${1} |egrep "${BADFUNCS_BIN}" |grep -v GLIBC
+     ${CROSS_COMPILE}objdump -d ${1} |egrep "${BADFUNCS_BIN}"
+     #${CROSS_COMPILE}readelf -s ${1} |egrep "${BADFUNCS_BIN}" |grep -v GLIBC
    }
  else
-   egrep -w -Hn --color=auto "${BADFUNCS_CSRC}" ${1}
+   egrep -Hn --color=auto "${BADFUNCS_CSRC}" ${1}
  fi
  
  return 0
