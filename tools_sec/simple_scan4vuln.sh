@@ -21,7 +21,7 @@ gcSCAN_MODE=1
 # the 'bad' boy functions; separate them with a '|' symbol (for the egrep)
 BADFUNCS_BIN="gets|strcat|strlen|strcmp|strcpy|sprintf|scanf|realpath|getopt|getpass|streadd|strecpy|strtrns|getwd|system"
 
-# Fmt: <func_name>[ ]*\(  : search for function followed by optional spaces and '('
+# Fmt: <func_name>[ ]*\(  : search for function name followed by optional spaces and '('
 BADFUNCS_CSRC="gets[ ]*\(|strcat[ ]*\(|strlen[ ]*\(|strcmp[ ]*\(|strcpy[ ]*\(|sprintf[ ]*\(|scanf[ ]*\(|realpath[ ]*\(|getopt[ ]*\(|getpass[ ]*\(|streadd[ ]*\(|strecpy[ ]*\(|strtrns[ ]*\(|getwd[ ]*\(|system[ ]*\("
 #----------
 
