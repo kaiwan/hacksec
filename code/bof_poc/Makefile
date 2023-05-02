@@ -16,6 +16,7 @@ CFLAGS_REG_DBG=${DBG} -Wall #-Wextra
 # simple BOF
 CFLAGS_FORT=-D_FORTIFY_SOURCE=2 -O2 -Wall #-Wextra
  # Pecuiliar : with this (above line), checksec says its Not fortified, but stack is protected
+ # ANS: See https://stackoverflow.com/questions/68847068/why-does-d-fortify-source-2-has-no-effect-in-my-compilation
 CFLAGS_STACKPROT=-fstack-protector-strong -O2 -Wall #-Wextra
  # Pecuiliar again! with this (above line), checksec says its fortified, but stack is Not protected
  # ??
