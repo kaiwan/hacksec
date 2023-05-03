@@ -36,7 +36,8 @@ static void secret_func(void)
 {  
 	char b[25];
 //	snprintf(b, 25, " CTF Secret 0x%lx\n", (unsigned long)&secret_func);
-	printf("YAY! Entered secret_func() !\n%s\n", b);
+	//printf("YAY! Entered secret_func() !\n%s\n", b);
+	printf("YAY! Entered secret_func() !\n");
 }
 
 static void foo(char *param1)
