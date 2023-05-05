@@ -12,13 +12,23 @@ DBG=-g -O0
 CFLAGS_REG=-Wall
 CFLAGS_REG_DBG=${DBG} -Wall #-Wextra
 
-#--- Fortification and stackprot options; actually works, preventing our
-# simple BOF
+#---
+# DEFAULT compiler switches passed in by GCC when compiling an ordinary C program WITH debug: -g
+# (via show_gcc_switches util in my 'usefulsnips' GitHub repo):
+# (Limitation: works only for ELF objects compiled with debug info, -g)
+# -On x86_64, gcc ver 11.3.0:
+#  C17 -mtune=generic -march=x86-64 -g -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection
+# -On AArch64, gcc ver 10.2.1:
+#  C17 -mlittle-endian -mabi=lp64 -g -fasynchronous-unwind-tables
+# -On AArch32, gcc ver 20.2.1:
+#  C17 -mfloat-abi=hard -mfpu=vfp -mtls-dialect=gnu -marm -march=armv6+fp -g
+#---
+#--- Fortification and stackprot options; actually works, preventing our simple BOF
 CFLAGS_FORT=-D_FORTIFY_SOURCE=2 -O2 -Wall #-Wextra
  # Pecuiliar : with this (above line), checksec says its Not fortified, but stack is protected
  # ANS: See https://stackoverflow.com/questions/68847068/why-does-d-fortify-source-2-has-no-effect-in-my-compilation
 CFLAGS_STACKPROT=-fstack-protector-strong -O2 -Wall #-Wextra
- # Pecuiliar again! with this (above line), checksec says its fortified, but stack is Not protected
+ # Pecuiliar again! with this (above line), checksec says its 'No canary found' (for stack protection)
  # ??
 #---
 
