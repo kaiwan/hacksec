@@ -12,6 +12,7 @@ name=$(basename "$0")
 CHKSEC=../../tools_sec/checksec.sh/checksec
 RUN_CHKSEC=1
 
+# wrapper over checksec script
 checkit()
 {
 [[ $# -ne 1 ]] && return
@@ -81,6 +82,15 @@ askfornext()
   read -p "<< Press [Enter] to continue, ^C to abort... >>"
 }
 
+ASLR_reset()
+{
+ ASLR=$(cat /proc/sys/kernel/randomize_va_space)
+ [[ ${ASLR} -eq 0 ]] && {
+	echo "Resetting ASLR to ON (2) now"
+	sudo sh -c "echo 2 > /proc/sys/kernel/randomize_va_space"
+ }
+}
+
 
 ## 'main'
 if [[ ! -f ${CHKSEC} ]] ; then
@@ -105,27 +115,39 @@ aslr=$(cat /proc/sys/kernel/randomize_va_space)
 }
 
 # PUT = Program Under Test
+i=1
 PUT=./bof_vuln_reg
-test_bof ${PUT} "Test #1 : program built with system's default gcc flags"
+test_bof ${PUT} "Test #$i : program built with system's default GCC flags"
 askfornext
 
-PUT=./bof_vuln_reg_stripped
-test_bof ${PUT} "Test #2 : program built with system's default gcc flags and stripped"
-askfornext
+#let i=i+1
+#PUT=./bof_vuln_reg_stripped
+#test_bof ${PUT} "Test #2 : program built with system's default GCC flags and stripped"
+#askfornext
 
+let i=i+1
 PUT=./bof_vuln_fortified
-test_bof ${PUT} "Test #3 : program built with system's gcc with fortification ON"
+test_bof ${PUT} "Test #$i : program built with system's GCC with fortification ON"
 askfornext
 
+let i=i+1
 PUT=./bof_vuln_stackprot
-test_bof ${PUT} "Test #4 : program built with system's gcc with stack prot ON"
+test_bof ${PUT} "Test #$i : program built with system's GCC with stack prot ON"
 askfornext
 
+let i=i+1
+PUT=./bof_vuln_strongprot
+test_bof ${PUT} "Test #$i : program built with system's GCC with 'STRONG' (all) protections ON"
+askfornext
+
+let i=i+1
 PUT=./bof_vuln_lessprot
-test_bof ${PUT} "Test #5 : program built with system's gcc with -z execstack,-fno-stack-protector flags"
+test_bof ${PUT} "Test #$i : program built with system's GCC with -z execstack,-fno-stack-protector flags"
 askfornext
 
-PUT=./bof_vuln_lessprot_dbg
-test_bof ${PUT} "Test #5 : program built with system's gcc with -g -O0 -z execstack,-fno-stack-protector flags"
+let i=i+1
+#PUT=./bof_vuln_lessprot_dbg
+#test_bof ${PUT} "Test #$i : program built with system's GCC with -g -O0 -z execstack,-fno-stack-protector flags"
 
+ASLR_reset
 exit 0
