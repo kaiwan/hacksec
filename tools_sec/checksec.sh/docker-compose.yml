@@ -5,12 +5,18 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.ubuntu
-    image:  checksec-ubuntu
+    image: checksec-ubuntu
     command: bash -c "./tests/test-checksec.sh"
 
-  checksec-arch:
+  checksec-photon:
     build:
       context: ./
-      dockerfile: Dockerfile.arch
-    image:  checksec-arch
+      dockerfile: Dockerfile.photon
+    image: checksec-photon
     command: bash -c "./tests/test-checksec.sh"
+
+  shellcheck:
+    volumes:
+      - .:/mnt
+    image: koalaman/shellcheck
+    command: "checksec"

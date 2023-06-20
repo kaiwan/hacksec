@@ -1,0 +1,40 @@
+repos:
+- repo: local
+  hooks:
+  - id: build_checksec
+    name: build checksec script
+    entry: bash ./hack/build.sh
+    language: system
+    pass_filenames: false
+  - id: enable_hooks
+    name: enable git hooks
+    entry: bash ./hack/enable-git-hooks.sh
+    language: system
+    pass_filenames: false
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.2.0
+  hooks:
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+  - id: check-merge-conflict
+  - id: debug-statements
+  - id: forbid-new-submodules
+  - id: mixed-line-ending
+- repo: https://github.com/fauust/pre-commit-shell
+  rev: v1.1
+  hooks:
+  - id: shfmt
+    args: ["-sr", "-i", "2", "-ci", "-w"]
+  - id: shellcheck
+    args: ["-e", "SC2154,SC2164,SC2129,SC2028"]
+- repo: https://github.com/Lucas-C/pre-commit-hooks
+  rev: v1.2.0
+  hooks:
+  - id: forbid-crlf
+  - id: remove-crlf
+  - id: remove-tabs
+  - id: forbid-tabs
+- repo: https://github.com/sirosen/fix-smartquotes
+  rev: 0.2.0
+  hooks:
+  - id: fix-smartquotes
