@@ -8,6 +8,6 @@
 # $
 #
 # Then:
-#./fmtstr_issue $(python -c 'print "0x%x,"*10')
+# ./fmtstr_issue $(perl -e 'print "0x%x,"x16')
 echo "Format string (vuln) demo: print 16 words of memory from the test process stack:"
 ./fmtstr_issue $(perl -e 'print "0x%x,"x16')
