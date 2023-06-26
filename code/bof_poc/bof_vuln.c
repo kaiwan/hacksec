@@ -23,6 +23,16 @@
  * 3) Third way: via running it interactively using gdb
  * (Refer the 'BOF_ROP_ARM.pdf document provided for details).
  *
+IA-32 (/ ARM-32) Stack Layout
+[...        <-- 'Top' of the stack (ESP); lower (virtual) addresses
+LOCALS
+...]
+EBP/SFP     <-- EBP (base ptr) OR SFP (pointer to previous stack frame [optional])
+RET addr
+[...
+PARAMS
+...]        <-- 'Bottom'; lower (virtual) addresses
+
  * Kaiwan N Billimoria
  * kaiwanTECH (Designer Graphix)
  *

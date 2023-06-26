@@ -7,15 +7,14 @@
 * Slightly modified, knb.
 *
 IA-32 (/ ARM-32) Stack Layout
-[...      <-- 'Top' (ESP); lower addresses
-[...
+[...        <-- 'Top' of the stack (ESP); lower (virtual) addresses
 LOCALS
 ...]
-[EBP]     <-- EBP (or SFP) = pointer to previous stack frame [optional]
+EBP/SFP     <-- EBP (base ptr) OR SFP (pointer to previous stack frame [optional])
 RET addr
 [...
 PARAMS
-...]      <-- 'Bottom'; lower addresses
+...]        <-- 'Bottom'; higher (virtual) addresses
 
 */
 #include <stdio.h>
