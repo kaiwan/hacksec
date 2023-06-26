@@ -16,12 +16,18 @@ if [ ! -x ./iof_try ]; then
   exit 1
 fi
 
-echo "---------- Buggy iof_try --------------"
-echo "Ok: ./iof_try 2147483647"
-./iof_try 2147483647
+echo "---------- Buggy program iof_try --------------"
+echo "Ok: ./iof_try 21"
+./iof_try 21
+echo "# passed above (21) is within acceptable range, so it's okay..."
+
 echo
 echo "***--- Buggy case (of IoF): ./iof_try 2147483649 ---***"
 ./iof_try 2147483649
+echo "
+Here, the # passed (2147483649) is OUTSIDE the acceptable range and NOT caught;
+this is as it wraps around to -ve, as the code's wrong (using a signed int),
+thus passing the program logic's validity check; clearly an IoF bug!"
 
 #---------------FIXED CASE--------------------------------------
 if [ ! -x ./iof_ok ]; then
@@ -30,9 +36,13 @@ if [ ! -x ./iof_ok ]; then
 fi
 
 echo
-echo "---------- Correct iof_ok --------------"
-echo "./iof_ok 2147483647"
-./iof_ok 2147483647
+echo "---------- Correct program iof_ok --------------"
+echo "./iof_ok 21"
+./iof_ok 21
+echo "# passed above (21) is within acceptable range, so it's okay..."
 echo
 echo "./iof_ok 4147483649"
 ./iof_ok 4147483649
+echo "
+Here, the # passed (2147483649) is OUTSIDE the acceptable range, but as the code's 
+correct (using an unsigned int), the potential IoF bug's caught!"

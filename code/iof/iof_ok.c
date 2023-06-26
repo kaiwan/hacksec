@@ -15,7 +15,8 @@
 int main(int argc, char **argv)
 {
 	off_t fsz = 5000, len = 2000;
-	unsigned int off = 0;
+	unsigned int off = 0; /* *unsigned* int explicitly declared, we want only positive values! 
+							 A potential IoF BUG is side-stepped */
 
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s offset\n", argv[0]);

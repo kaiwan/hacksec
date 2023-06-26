@@ -15,7 +15,7 @@
 int main(int argc, char **argv)
 {
 	off_t fsz = 5000, len = 2000;
-	int off = 0;
+	int off = 0; /* *signed* int, where we want only positive values! A BUG waiting to strike! */
 
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s offset\n", argv[0]);
