@@ -86,8 +86,8 @@ ASLR_reset()
 {
  ASLR=$(cat /proc/sys/kernel/randomize_va_space)
  [[ ${ASLR} -eq 0 ]] && {
-	echo "Resetting ASLR to ON (2) now"
-	sudo sh -c "echo 2 > /proc/sys/kernel/randomize_va_space"
+	echo "Resetting ASLR to ON (${ASLR_VAL}) now"
+	sudo sh -c "echo ${ASLR_VAL} > /proc/sys/kernel/randomize_va_space"
  }
 }
 
@@ -103,15 +103,15 @@ elif [[ ${RUN_CHKSEC} -eq 1 ]] ; then
 fi
 
 # Ensure that ASLR is Off
-aslr=$(cat /proc/sys/kernel/randomize_va_space)
-[[ ${aslr} -ne 0 ]] && {
+export ASLR_VAL=$(cat /proc/sys/kernel/randomize_va_space)
+[[ ${ASLR_VAL} -ne 0 ]] && {
 	echo "*** WARNING ***
 ASLR is ON; prg may not work as expected!
 Will attempt to turn it OFF now ...
 "
 sudo sh -c "echo 0 > /proc/sys/kernel/randomize_va_space"
 aslr=$(cat /proc/sys/kernel/randomize_va_space)
-[[ ${aslr} -ne 0 ]] && echo "*** WARNING *** ASLR still ON" || echo "Ok, it's now Off"
+[[ ${aslr} -ne 0 ]] && echo "*** WARNING *** ASLR still ON" || echo "Ok, ASLR is now Off"
 }
 
 # PUT = Program Under Test
