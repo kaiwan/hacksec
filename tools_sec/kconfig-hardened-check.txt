@@ -1,2 +1,0 @@
-Clone the kconfig-hardened-check from it's repo:
-git clone https://github.com/a13xp0p0v/kconfig-hardened-check
