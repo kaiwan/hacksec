@@ -1,0 +1,2 @@
+echo "git clone https://github.com/speed47/spectre-meltdown-checker"
+git clone https://github.com/speed47/spectre-meltdown-checker
