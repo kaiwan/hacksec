@@ -1,0 +1,97 @@
+-----------------------------------------------------------
+core_[send|recv] : Collect the core dump across the network
+-----------------------------------------------------------
+Author: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+License: MIT
+-----------------------------------------------------------
+
+TOO (Theory Of Operation):
+--------------------------
+The man page on core(5) states:
+
+"Piping core dumps to a program
+       Since  kernel  2.6.19, Linux supports an alternate syntax for the 
+       /proc/sys/kernel/core_pattern file.  If the first character of this
+       file is a pipe symbol (|), then the remainder of the line is
+       interpreted as the command-line for a user-space program (or script)
+       that is to be executed.  Instead of being written to a disk file, the
+       core dump is given as standard input to the program. 
+       ..."
+
+ So, this project has two parts:
+ 1. the program that reads the core file data from it's stdin (as it's
+ setup to be piped to it via /proc/sys/kernel/core_pattern), and then
+ transmits this data to a receiver process over the network: core_send
+ 2. the program that is sent this data over the network connection, which
+ will receive and write it to a file: recv_core .
+
+
+Setup:
+------
+1. On the system where the 'core receiver' process is to run and "collect"
+the core data over the network (the 'service'):
+
+pkill recv_core 2>/dev/null
+./recv_core {receiver-IP} [-v] &
+
+Eg.
+pkill recv_core_dbg 2>/dev/null ; ./recv_core_dbg 192.168.0.102 -v &
+
+2. On the system where the process(es) crash, dumping core (the 'client'):
+
+sudo bash -c echo "|<full-pthname>/core_send_dbg {receiver-IP}" > /proc/sys/kernel/core_pattern
+
+
+Example Crash
+-------------
+On the 'server' receiver box we setup the core-receiver:
+
+$ pkill recv_core_dbg 2>/dev/null ; ./recv_core_dbg 192.168.0.102 -v &
+[1]+  Terminated              ./recv_core_dbg 192.168.0.102 -v
+[1] 5949
+./recv_core_dbg: tcp socket created
+./recv_core_dbg: bind done at IP 192.168.0.102 port 64740
+./recv_core_dbg: listen q set up
+./recv_core_dbg: SIGCHLD handler setup (zombies are history)
+./recv_core_dbg: pid 5949 blocking on accept()..
+$ 
+
+
+On the 'client' system we run a buggy program:
+$ ./1_buggy_rel /etc/
+Segmentation fault (core dumped)
+$ 
+
+Now we see on the receiver the output (with 'debug' and 'verbose' mode on):
+
+Server ./recv_core_dbg: client connected now from IP 192.168.0.109 port # 53144
+./recv_core_dbg: pid 5949 blocking on accept()..
+./recv_core_dbg: child server created; pid 5957
+ rd=4096 tr=4096 (n=4096)
+ wr=4096 tw=4096 (n=4096)
+ rd=4096 tr=4096 (n=4096)
+ wr=4096 tw=4096 (n=4096)
+ 
+ --snip--
+
+ rd=1035 tr=1035 (n=4096)
+ wr=1035 tw=1035 (n=1035)
+ wr=0 tw=0 (n=0)
+process_client:109 : 
+read total  : 394251 bytes from sender
+wrote total : 394251 bytes to file
+./recv_core_dbg: child server 5957 exiting..
+sig_child:62 : 
+$ 
+
+The 'core dump' has been written into the file called 'core_dump' on the
+receiver side:
+-r--r--r-- 1 seawolf seawolf 386K May 18 08:01 core_dump
+
+Note: 
+- as of now, it just overwrites any previous instance, so BACKUP the
+file(s) if you want them saved
+- TODO
+  - try using sendfile(2) and/or splice(2).
+
+[End Doc]
