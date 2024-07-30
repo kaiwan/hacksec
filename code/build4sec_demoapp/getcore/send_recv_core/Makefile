@@ -24,6 +24,7 @@ else
   CC := clang
   LINKIN := -static-libsan
 endif
+CC=${CROSS_COMPILE}gcc
 $(info Compiler set to $(CC))
 
 STRIP=${CROSS_COMPILE}strip
@@ -44,11 +45,13 @@ PROD_OPTLEVEL=2
 SECURITY_CFLAGS=-fstack-protector-strong -Wformat-security \
 	-O${PROD_OPTLEVEL} -D_FORTIFY_SOURCE=${PROD_OPTLEVEL} \
 	-fPIE \
-	-fsanitize=bounds -fsanitize-undefined-trap-on-error
 	-fsanitize=bounds -fsanitize-undefined-trap-on-error -fcf-protection
 ifeq (gcc, $(CC))
-  SECURITY_CFLAGS=${SECURITY_CFLAGS} -fstrict-flex-arrays
+  SECURITY_CFLAGS=-fstack-protector-strong -Wformat-security \
+	-O${PROD_OPTLEVEL} -D_FORTIFY_SOURCE=${PROD_OPTLEVEL} \
+	-fPIE \
 	-fsanitize=bounds -fsanitize-undefined-trap-on-error -fcf-protection \
+	-fstrict-flex-arrays
 endif
 
 CFLAGS = -UDEBUG -Wall ${CSTD} -D_POSIX_C_SOURCE=${POSIX_STD} ${STD_DEFS} ${SECURITY_CFLAGS}
