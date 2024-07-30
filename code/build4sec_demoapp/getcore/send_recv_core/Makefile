@@ -16,17 +16,41 @@
 ALL :=  send_core send_core_dbg send_core_dbg_asan send_core_dbg_ub send_core_dbg_msan \
 	recv_core recv_core_dbg recv_core_dbg_asan recv_core_dbg_ub recv_core_dbg_msan \
 
+# Decide which compiler to use; GCC doesn't support MSAN, clang does
 CC=${CROSS_COMPILE}gcc
-#CL=${CROSS_COMPILE}clang
+ifeq (, $(shell which clang))
+  $(warning === WARNING! No clang (compiler) in PATH (reqd for MSAN); consider doing 'sudo apt install clang' or equivalent ===)
+else
+  CC := clang
+  LINKIN := -static-libsan
+endif
+$(info Compiler set to $(CC))
+
+STRIP=${CROSS_COMPILE}strip
+OBJCOPY=${CROSS_COMPILE}objcopy
+
+CSTD=-ansi -std=c99 -std=c11 -std=c18  # the last one wins; else if unsupported, earlier ones...
+# For the meaning of the following feature test macros, see feature_test_macros(7)
+POSIX_STD=201112L
+STD_DEFS=-D_DEFAULT_SOURCE -D_GNU_SOURCE
+
+# Add this option switch to CFLAGS / CFLAGS_DBG if you want ltrace to work on Ubuntu!
+LTRACE_ENABLE=-z lazy
 
 PROD_OPTLEVEL=2
+  # -O<N>; N can be 0-3 or s (optimize for speed & size);
+  #  in the -D_FORTIFY_SOURCE=N option, you must set N to the same number
+
 SECURITY_CFLAGS=-fstack-protector-strong -Wformat-security \
 	-O${PROD_OPTLEVEL} -D_FORTIFY_SOURCE=${PROD_OPTLEVEL} \
 	-fPIE \
-	-fsanitize=bounds -fsanitize-undefined-trap-on-error -fstrict-flex-arrays
+	-fsanitize=bounds -fsanitize-undefined-trap-on-error
+ifeq (gcc, $(CC))
+  SECURITY_CFLAGS=${SECURITY_CFLAGS} -fstrict-flex-arrays
+endif
 
-CFLAGS=-Wall ${SECURITY_CFLAGS}
-CFLAGS_DBG=-g -ggdb -gdwarf-4 -O0 -Wall -Wextra ${SECURITY_CFLAGS}
+CFLAGS = -UDEBUG -Wall ${CSTD} -D_POSIX_C_SOURCE=${POSIX_STD} ${STD_DEFS} ${SECURITY_CFLAGS}
+CFLAGS_DBG = -DDEBUG -g -ggdb -gdwarf-4 -Og -Wall -Wextra -Wpedantic -fno-omit-frame-pointer ${CSTD} -D_POSIX_C_SOURCE=${POSIX_STD} ${STD_DEFS} ${SECURITY_CFLAGS}
 CFLAGS_DBG_ASAN=${CFLAGS_DBG} -fsanitize=address
 CFLAGS_DBG_MSAN=${CFLAGS_DBG} -fsanitize=memory
 CFLAGS_DBG_UB=${CFLAGS_DBG} -fsanitize=undefined
@@ -46,11 +70,11 @@ common_dbg.o: ../common.c ../common.h
 
 #--- Sanitizers (use clang): common_dbg_*
 common_dbg_asan.o: ../common.c ../common.h
-	${CL} ${CFLAGS_DBG_ASAN} -c ../common.c -o common_dbg_asan.o
+	${CC} ${CFLAGS_DBG_ASAN} -c ../common.c -o common_dbg_asan.o
 common_dbg_ub.o: ../common.c ../common.h
-	${CL} ${CFLAGS_DBG_UB} -c ../common.c -o common_dbg_ub.o
+	${CC} ${CFLAGS_DBG_UB} -c ../common.c -o common_dbg_ub.o
 common_dbg_msan.o: ../common.c ../common.h
-	${CL} ${CFLAGS_DBG_MSAN} -c ../common.c -o common_dbg_msan.o
+	${CC} ${CFLAGS_DBG_MSAN} -c ../common.c -o common_dbg_msan.o
 
 send_core.o: send_core.c
 	${CC} ${CFLAGS} -c send_core.c -o send_core.o
