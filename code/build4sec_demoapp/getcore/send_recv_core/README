@@ -5,6 +5,19 @@ Author: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
 License: MIT
 -----------------------------------------------------------
 
+<<
+The reason this small project's here - in the L7 'hacking' session - is
+to demo a better and more 'security-conscious' Makefile. We try and use
+several security-related cflags, linker flags, have a checksec target, and
+so forth...
+
+Good info on security-related cflags:
+GCC security related flags reference:
+ https://gist.github.com/kaiwan/d82d8271459c90c3accc3f795dcaf228
+
+>>
+
+
 TOO (Theory Of Operation):
 --------------------------
 The man page on core(5) states:
