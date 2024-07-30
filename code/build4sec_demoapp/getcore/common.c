@@ -14,7 +14,7 @@
  * This is the 'common' code that gets compiled into all binary
  * executables.
  */
-#define _GNU_SOURCE
+//#define _GNU_SOURCE // defined in the Makefile
 #include "common.h"
 #include <stdio.h>
 #include <stdlib.h>
