@@ -31,6 +31,8 @@
 int show_blocked_signals(void);
 int handle_err(int fatal, const char *fmt, ...);
 int r_sleep(time_t sec, long nsec);
+int file_read(int fd, void *dbuf, size_t n);
+int file_write(int fd, void *sbuf, size_t n);
 
 
 /*--- Macros ---*/
