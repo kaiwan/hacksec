@@ -41,7 +41,10 @@ CFLAGS_LESSPROT=-z execstack -fno-stack-protector -no-pie -Wall
 
 #--- Linker flags
 # -Wl,-z,now -Wl,-z,relro : enable 'full RELRO' (relocation read-only)
-LDFLAGS=-Wl,-z,now -Wl,-z,relro
+LDFLAGS1=-Wl,-z,now -Wl,-z,relro
+# -Wl,-z,now -Wl,-z,relro : enable 'full RELRO' (relocation read-only)
+LDFLAGS2=-Wl,-z,noexecstack  #, -Wl,-z,noexecheap
+LDFLAGS = ${LDFLAGS1} ${LDFLAGS2}
 
 all: ${ALL}
 

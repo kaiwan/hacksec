@@ -18,7 +18,6 @@ ALL_GCC :=  send_core send_core_dbg send_core_dbg_asan send_core_dbg_ub \
 	recv_core recv_core_dbg recv_core_dbg_asan recv_core_dbg_ub
 ALL_CLANG :=  send_core send_core_dbg send_core_dbg_asan send_core_dbg_ub send_core_dbg_msan \
 	recv_core recv_core_dbg recv_core_dbg_asan recv_core_dbg_ub recv_core_dbg_msan
-ALL := $(ALL_GCC)
 
 # Decide which compiler to use; GCC doesn't support MSAN, clang does
 CC=${CROSS_COMPILE}gcc
@@ -32,6 +31,7 @@ endif
 # Forcing to gcc (for now) as this enables (linker) 'full RELRO' (relocation ro)
 CC=${CROSS_COMPILE}gcc
 $(info Compiler set to $(CC))
+ALL := $(ALL_GCC)
 
 STRIP=${CROSS_COMPILE}strip
 OBJCOPY=${CROSS_COMPILE}objcopy
@@ -70,7 +70,10 @@ CFLAGS_DBG_UB=${CFLAGS_DBG} -fsanitize=undefined
 
 #--- Linker flags
 # -Wl,-z,now -Wl,-z,relro : enable 'full RELRO' (relocation read-only)
-LDFLAGS=-Wl,-z,now -Wl,-z,relro
+LDFLAGS1=-Wl,-z,now -Wl,-z,relro
+# -Wl,-z,now -Wl,-z,relro : enable 'full RELRO' (relocation read-only)
+LDFLAGS2=-Wl,-z,noexecstack  #, -Wl,-z,noexecheap
+LDFLAGS = ${LDFLAGS1} ${LDFLAGS2}
 # For Windows add:
 # -Wl,dynamicbase : tell linker to use ASLR protection
 # -Wl,nxcompat : tell linker to use DEP protection
@@ -154,6 +157,7 @@ recv_core_dbg_ub.o: recv_core.c
 recv_core_dbg_ub: recv_core_dbg_ub.o common_dbg_ub.o
 	${CC} ${CFLAGS_DBG_UB} -o recv_core_dbg_ub recv_core_dbg_ub.o common_dbg_ub.o ${LDFLAGS}
 
+# Remove 'msan' for now as GCC doesn't support it well
 recv_core_dbg_msan.o: recv_core.c
 	${CC} ${CFLAGS_DBG_MSAN} -c recv_core.c -o recv_core_dbg_msan.o
 recv_core_dbg_msan: recv_core_dbg_msan.o common_dbg_msan.o
