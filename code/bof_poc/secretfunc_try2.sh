@@ -8,7 +8,7 @@
 # Security/hardening *has* gotten a lot better in recent years; thus, this
 # attempt typically *fails* on modern x86/ARM !
 # Kaiwan NB
-PUT=./bof_vuln_lessprot_dbg  #./bof_vuln_lessprot
+PUT=./bof_vuln_lessprot
 
 usage()
 {
