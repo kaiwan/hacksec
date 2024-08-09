@@ -48,11 +48,14 @@ PROD_OPTLEVEL=3
 
 #--- Security-related compiler flags !
 # Ref: GCC security related flags reference [https://gist.github.com/kaiwan/d82d8271459c90c3accc3f795dcaf228]
-SECURITY_CFLAGS_REG = -fstack-protector-strong -Wformat-security \
+SECURITY_CFLAGS_REG = -fstack-protector-strong \
 	-O${PROD_OPTLEVEL} -D_FORTIFY_SOURCE=${PROD_OPTLEVEL} \
 	-pie -fPIE \
-	-fsanitize=bounds -fsanitize-undefined-trap-on-error -fcf-protection \
+	-fsanitize=bounds -fsanitize-undefined-trap-on-error \
+	-fcf-protection \
 	-fsanitize=signed-integer-overflow -fsanitize-undefined-trap-on-error
+### NOTE- the -fcf-protection* flag(s) might not work on all archs ###
+
 SECURITY_CFLAGS = ${SECURITY_CFLAGS_REG}
 ifeq (gcc, $(CC))
    SECURITY_CFLAGS = ${SECURITY_CFLAGS_REG} -fstrict-flex-arrays
@@ -71,7 +74,7 @@ CFLAGS_DBG_UB=${CFLAGS_DBG} -fsanitize=undefined
 #--- Linker flags
 # -Wl,-z,now -Wl,-z,relro : enable 'full RELRO' (relocation read-only)
 LDFLAGS1=-Wl,-z,now -Wl,-z,relro
-# -Wl,-z,now -Wl,-z,relro : enable 'full RELRO' (relocation read-only)
+# -Wl,-z,noexecstack : enable non-executable stack
 LDFLAGS2=-Wl,-z,noexecstack  #, -Wl,-z,noexecheap
 LDFLAGS = ${LDFLAGS1} ${LDFLAGS2}
 # For Windows add:
@@ -157,7 +160,6 @@ recv_core_dbg_ub.o: recv_core.c
 recv_core_dbg_ub: recv_core_dbg_ub.o common_dbg_ub.o
 	${CC} ${CFLAGS_DBG_UB} -o recv_core_dbg_ub recv_core_dbg_ub.o common_dbg_ub.o ${LDFLAGS}
 
-# Remove 'msan' for now as GCC doesn't support it well
 recv_core_dbg_msan.o: recv_core.c
 	${CC} ${CFLAGS_DBG_MSAN} -c recv_core.c -o recv_core_dbg_msan.o
 recv_core_dbg_msan: recv_core_dbg_msan.o common_dbg_msan.o
