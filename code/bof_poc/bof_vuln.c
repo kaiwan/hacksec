@@ -34,7 +34,7 @@ PARAMS
 ...]        <-- 'Bottom'; lower (virtual) addresses
 
  * Kaiwan N Billimoria
- * kaiwanTECH (Designer Graphix)
+ * kaiwanTECH (Designer Graphics)
  *
  * Credits: Original Ref: YouTube tut:
  *  https://www.youtube.com/watch?v=7P9lnpAZy60

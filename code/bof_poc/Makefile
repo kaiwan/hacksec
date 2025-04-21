@@ -8,7 +8,7 @@ CC=${CROSS_COMPILE}gcc
 LD=${CROSS_COMPILE}ld
 STRIP=${CROSS_COMPILE}strip
 
-DBG=-g -O0
+DBG=-Og #-O0
 CFLAGS_REG=-Wall -pie -fPIE
 CFLAGS_REG_DBG=${DBG} -Wall #-Wextra
 
