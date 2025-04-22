@@ -14,8 +14,11 @@
 
 int main(int argc, char **argv)
 {
-	off_t fsz = 5000, len = 2000;
-	int off = 0; /* *signed* int, where we want only positive values! A BUG waiting to strike! */
+	off_t fsz = 2147483647; //5000, 
+	off_t len = 5;
+	int off = 0; /* this is a *signed* int, BUT it's a var where we want
+	              * only positive values! A BUG waiting to strike!
+		      */
 
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s offset\n", argv[0]);
@@ -23,17 +26,20 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 IoF Poc:
+	 IoF PoC:
 	 A signed integer on 64-bit ranges from (min,max) (-2,147,483,648, +2,147,483,647).
-	 So, if you pass a positive offset within the max it works. 
-	 However, just pass the number 2,147,483,649 and see! It wraps around to
+	 So, if you pass a positive offset within the max value, it works. 
+	 However, just pass the number 2,147,483,649 and see what happens! It wraps around to
 	 the negative side and the validity check below passes. Whoops!
 	 */
 	off = atoi(argv[1]);
-	printf("off = %d\n", off);
+	printf("off = %d, len=%ld; fsz=%ld\n", off, len, fsz);
+	printf("(Here, we want off+len to be within the fsz value %ld\n"
+	" So, now, off+len = %ld)\n", fsz, (off+len));
 	if (off+len > fsz) {
 		fprintf(stderr,
-			"%s: invalid offset or offset/length combination, aborting...\n", argv[0]);
+			"%s: invalid offset or offset/length combination, aborting...\n"
+			"(here, we want off+len to be within the value %ld)\n", argv[0], fsz);
 		exit(1);
 	}
 	printf("Ok, proceed !\n");
