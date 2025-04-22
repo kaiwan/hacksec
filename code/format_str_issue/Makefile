@@ -1,5 +1,5 @@
 # Makefile
-ALL := fmtstr_issue fmtstr_with_errorflag
+ALL := fmtstr_issue fmtstr_with_errorflag fmtstr_issue_relro
 all: ${ALL}
 
 fmtstr_issue: fmtstr_issue.c
