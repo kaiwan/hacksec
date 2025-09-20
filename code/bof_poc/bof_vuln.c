@@ -14,12 +14,14 @@
  *  perl -e 'print "A"x12 . "B"x4 . "\xc4\x04\x01\x00"' | ./arm_bof_vuln_reg
  *
  * Of course, the address being passed here (in (1) and (2) via the file input2_secretfunc)
- * is one value I encountered (0x000104c4); you should use nm(1) to lookup the
- * precise address of the 'secret' function and use that value...
+ * is one value I encountered (0x000104c4; it's passed as a little-endian number);
+ * you should use nm(1) to lookup the precise address of the 'secret' function
+ * and use that value...
  * The helper script simple_bof_try1.sh does precisely that, and runs all variations.
  *
  * 2) Another way:
  *  ./arm_bof_vuln_reg < input2_secretfunc
+ *
  * 3) Third way: via running it interactively using gdb
  * (Refer the 'BOF_ROP_ARM.pdf document provided for details).
  *
@@ -44,7 +46,10 @@ PARAMS
 #include <unistd.h>
 #include <sys/types.h>
 
-static void secret_func(void)
+/* In order to let nm(1) see symbols, do NOT mark as static.
+ * As well, we use the noinline gcc attribute...
+ */
+void __attribute__((noinline)) secret_func(void)
 {  
 	char b[25];
 	snprintf(b, 25, "CTF Secret 0x%lx\n", (unsigned long)&secret_func);
