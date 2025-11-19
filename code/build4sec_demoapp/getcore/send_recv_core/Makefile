@@ -14,7 +14,8 @@
 ## Pl check and keep or remove <foo>_dbg_[asan|ub|msan] targets
 ## as desired.
 # gcc doesn't support MSAN well enough
-ALL_GCC :=  send_core send_core_dbg send_core_dbg_asan send_core_dbg_ub \
+ALL_GCC :=  send_core send_core_dbg \
+	send_core_dbg_asan send_core_dbg_ub \
 	recv_core recv_core_dbg recv_core_dbg_asan recv_core_dbg_ub
 #ALL_CLANG :=  send_core send_core_dbg \
 #	send_core_dbg_asan send_core_dbg_ub send_core_dbg_msan \
@@ -36,6 +37,7 @@ ALL := $(ALL_GCC)
 STRIP=${CROSS_COMPILE}strip
 OBJCOPY=${CROSS_COMPILE}objcopy
 
+# 'C' standards
 CSTD=-ansi -std=c99 -std=c11 -std=c18  # the last one wins; else if unsupported, earlier ones...
 # For the meaning of the following feature test macros, see feature_test_macros(7)
 POSIX_STD=201112L
@@ -66,7 +68,9 @@ WARN = -Wall -Wextra -Wstack-protector -Wformat -Werror=format-security
 WARN_MORE = ${WARN} -Wpedantic #-Werror
 
 CFLAGS = -UDEBUG ${WARN} ${CSTD} -D_POSIX_C_SOURCE=${POSIX_STD} ${STD_DEFS} ${SECURITY_CFLAGS}
-CFLAGS_DBG = -DDEBUG -g -ggdb -gdwarf-4 -Og ${WARN_MORE} -fno-omit-frame-pointer ${CSTD} -D_POSIX_C_SOURCE=${POSIX_STD} ${STD_DEFS} ${SECURITY_CFLAGS}
+CFLAGS_DBG = -DDEBUG -g -ggdb -gdwarf-4 -Og ${WARN_MORE} -fno-omit-frame-pointer \
+	${CSTD} -D_POSIX_C_SOURCE=${POSIX_STD} ${STD_DEFS} \
+	${SECURITY_CFLAGS}
 CFLAGS_DBG_ASAN=${CFLAGS_DBG} -fsanitize=address
 CFLAGS_DBG_MSAN=${CFLAGS_DBG} -fsanitize=memory
 CFLAGS_DBG_UB=${CFLAGS_DBG} -fsanitize=undefined
@@ -86,10 +90,10 @@ CB_FILES := *.[ch]
 
 CHECKSEC := checksec
 checksec:
-	make send_core recv_core
-ifeq (, $(shell which ${CHECKSEC}))
+ifeq (, $(shell which ${CHECKSEC} 2>/dev/null))
    $(warning === WARNING! ${CHECKSEC} not installed; consider doing 'sudo apt install checksec' or equivalent ===)
 else
+	make send_core recv_core
 	checksec --file=send_core
 	checksec --file=recv_core
 endif
