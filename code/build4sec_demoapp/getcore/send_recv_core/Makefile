@@ -16,18 +16,18 @@
 # gcc doesn't support MSAN well enough
 ALL_GCC :=  send_core send_core_dbg send_core_dbg_asan send_core_dbg_ub \
 	recv_core recv_core_dbg recv_core_dbg_asan recv_core_dbg_ub
-ALL_CLANG :=  send_core send_core_dbg send_core_dbg_asan send_core_dbg_ub send_core_dbg_msan \
-	recv_core recv_core_dbg recv_core_dbg_asan recv_core_dbg_ub recv_core_dbg_msan
+#ALL_CLANG :=  send_core send_core_dbg \
+#	send_core_dbg_asan send_core_dbg_ub send_core_dbg_msan \
+#	recv_core recv_core_dbg recv_core_dbg_asan recv_core_dbg_ub recv_core_dbg_msan
 
 # Decide which compiler to use; GCC doesn't support MSAN, clang does
-CC=${CROSS_COMPILE}gcc
-ifeq (, $(shell which clang))
-  $(warning === WARNING! No clang (compiler) in PATH (reqd for MSAN); consider doing 'sudo apt install clang' or equivalent ===)
-else
-  CC := clang
-  LINKIN := -static-libsan
-  ALL := $(ALL_CLANG)
-endif
+#ifeq (, $(shell which clang 2>/dev/null))
+#  $(warning === WARNING! No clang (compiler) in PATH (reqd for MSAN); consider doing 'sudo apt install clang' or equivalent ===)
+#else
+#  CC := clang
+#  LINKIN := -static-libsan
+#  ALL := $(ALL_CLANG)
+#endif
 # Forcing to gcc (for now) as this enables (linker) 'full RELRO' (relocation ro)
 CC=${CROSS_COMPILE}gcc
 $(info Compiler set to $(CC))
@@ -80,10 +80,6 @@ LDFLAGS = ${LDFLAGS1} ${LDFLAGS2}
 # For Windows add:
 # -Wl,dynamicbase : tell linker to use ASLR protection
 # -Wl,nxcompat : tell linker to use DEP protection
-
-# Add this option switch to LDFLAGS if you want ltrace to work on Ubuntu!
-# Conflicts with full relro though..
-LTRACE_ENABLE=-z lazy
 
 all: ${ALL}
 CB_FILES := *.[ch]
