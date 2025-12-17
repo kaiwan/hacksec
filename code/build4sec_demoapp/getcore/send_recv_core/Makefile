@@ -71,7 +71,7 @@ CFLAGS = -UDEBUG ${WARN} ${CSTD} -D_POSIX_C_SOURCE=${POSIX_STD} ${STD_DEFS} ${SE
 CFLAGS_DBG = -DDEBUG -g -ggdb -gdwarf-4 -Og ${WARN_MORE} -fno-omit-frame-pointer \
 	${CSTD} -D_POSIX_C_SOURCE=${POSIX_STD} ${STD_DEFS} \
 	${SECURITY_CFLAGS}
-CFLAGS_DBG_ASAN=${CFLAGS_DBG} -fsanitize=address
+CFLAGS_DBG_ASAN=${CFLAGS_DBG} -fsanitize=address -fsanitize-address-use-after-scope
 CFLAGS_DBG_MSAN=${CFLAGS_DBG} -fsanitize=memory
 CFLAGS_DBG_UB=${CFLAGS_DBG} -fsanitize=undefined
 
