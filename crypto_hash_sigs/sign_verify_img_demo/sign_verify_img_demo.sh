@@ -49,7 +49,7 @@ echo "Signed"
 }
 
 # Parameters:
-#  $1 : image file to sign
+#  $1 : image file to verify
 verify_image()
 {
 #------------ On target device
@@ -80,7 +80,7 @@ Options:
  -t {image_file} : test  : deliberately modify the image and try to verify; should FAIL verification
  -r              : reset : revert to original u-boot-img.bin, remove keys, signature file
 
-You can try:
+Suggested order that you can try:
 1. reset
 2. generate the key pair
 3. sign an image file
