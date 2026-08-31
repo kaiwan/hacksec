@@ -9,6 +9,7 @@ name=$(basename $0)
 PVTKEY=privkey.pem
 PUBKEY=pubkey.pem
 IMG=u-boot-img.bin
+#IMG=sign_then_encrypt.txt
 SIGNFILE=image.sig
 
 gen_keys()
@@ -28,7 +29,7 @@ file ${PUBKEY}
 
 # Parameters:
 #  $1 : image file to sign
-sign_image()
+digitally_sign_image()
 {
 [[ $# -eq 0 ]] && return
 # 3. Hash (SHA256) the image file and Sign the digest with the pvt key
@@ -38,10 +39,10 @@ sign_image()
 #                     │
 #                     ▼
 #           ┌────────────────────┐
-#           │ RSA-sign with      │ ──► signature (blob)
+#           │ RSA-sign with      │ ──► digital signature (blob)
 #           │ PRIVATE key        │
 #           └────────────────────┘
-echo "Signing the image file \"$1\"..."
+echo "Digitally signing the image file \"$1\"..."
 echo "Just FYI: digest = sha256sum of image file:"
 sha256sum ${1}
 openssl dgst -sha256 -sign ${PVTKEY} -out ${SIGNFILE} ${1}
@@ -81,12 +82,16 @@ Options:
  -r              : reset : revert to original u-boot-img.bin, remove keys, signature file
 
 Suggested order that you can try:
-1. reset
-2. generate the key pair
-3. sign an image file
-4. verify it
-5. run the 'test' option: it will modify the u-boot-img.bin and try to verify it, which should Fail
-Back to step 1..."
+1. reset                                                          : -r
+2. generate the key pair                                          : -g
+3. digitally sign an image file (f.e., u-boot-img.bin)            : -s img_file
+4. verify it                                                      : -v img_file
+5. run the 'test' option: it will modify the u-boot-img.bin and   : -t img_file
+   try to verify it, which should Fail
+Back to step 1...
+
+Note: the digital signature is the '${SIGNFILE}' file (gen by step 3); it must be attached
+and sent along with the original (plaintext/encrypted) file to the recipient."
 }
 
 
@@ -105,7 +110,7 @@ case "${opt}" in
 	[[ $# -ne 2 ]] && {
 		usage ; exit 1
 	}
-	sign_image "$2"
+	digitally_sign_image "$2"
 	;;
  -v)
 	[[ $# -ne 2 ]] && {
