@@ -52,9 +52,9 @@ gen_keys_for ${PERSON}
 
 echo "
 Before proceeding further, first ensure you exchange your public key with your peer
-(save it as:
- Alice: ~/.ssh/bob_pubkey.pem
- Bob  : ~/.ssh/alice_pubkey.pem
+(save it like this:
+ If you're Alice : ~/.ssh/bob_pubkey.pem
+ If you're Bob   : ~/.ssh/alice_pubkey.pem
 )"
 #gen_keys_for bob
 }
@@ -125,10 +125,8 @@ Options:
              : Here, the -p 'person' option doesn't really matter...
              : (Alice & Bob must then exchange their public keys)
 
- -s {file}   : send (via sign-then-encrypt) the specified file to the recipient
+ -s {file}   : prepare for send (via sign-then-encrypt) the specified file to the recipient
 
- -s {file}   : sign the specified file
- -e {file}   : encrypt the specified file
  -d {file}   : decrypt the specified file
  -v {file}   : verify the specified file
 
@@ -150,16 +148,17 @@ and sent along with the original (plaintext/encrypted) file to the recipient."
 
 
 #--- 'main'
-
+set +u
+[[ "$1" != "-p" ]] && {
+	echo "*** First parameter must be '-p {alice|bob}'
+"
+	usage ; exit 1
+}
+set -u
 [[ $# -lt 3 ]] && {
   usage ; exit 0
 }
 
-[[ "$1" != "-p" ]] && {
-	echo "*** First option must be '-p {alice|bob}'
-"
-	usage ; exit 1
-}
 shift
 
 [[ "$1" != "alice" ]] && [[ "$1" != "bob" ]] && {
@@ -167,15 +166,24 @@ shift
 }
 [[ "$1" = "alice" ]] && {
   PERSON="alice"
+  MY_PVTKEY=keys_dir/alice_privkey.pem
   SIGNING_KEY=keys_dir/alice_privkey.pem
   RECIPIENT_PUBKEY=~/.ssh/bob_pubkey.pem
-  [[ ! -f ${RECIPIENT_PUBKEY} ]] && die "Recipient's public key not found. First generate the keys and exchange them"
 }
 [[ "$1" = "bob" ]] && {
   PERSON="bob"
+  MY_PVTKEY=keys_dir/bob_privkey.pem
   SIGNING_KEY=keys_dir/bob_privkey.pem
   RECIPIENT_PUBKEY=~/.ssh/alice_pubkey.pem
 }
+
+errmsg2="First generate the keys and exchange the public ones only."
+#echo "# = $#, val = $@"
+if [[ "$2" != "-g" ]] ; then
+  [[ ! -f ${MY_PVTKEY} ]] && die "Your private key not found. ${errmsg2}"
+  [[ ! -f ${SIGNING_KEY} ]] && die "Recipient's signing key not found. ${errmsg2}"
+  [[ ! -f ${RECIPIENT_PUBKEY} ]] && die "Recipient's public key not found. ${errmsg2}"
+fi
 
 shift
 opt="$1"
@@ -198,6 +206,12 @@ case "${opt}" in
 
 	# send ${FILE}.enc to recipient, typically via scp
 	;;
+ -d)                           # decrypt
+	[[ $# -ne 2 ]] && {
+		usage ; exit 1
+	}
+	FILE="$2" # the .enc file
+	OUTFILE="${FILE%.enc}"
 	rm -f ${OUTFILE}
 	openssl pkeyutl -decrypt -inkey ${MY_PVTKEY} -in ${FILE} > ${OUTFILE}
 	#openssl rsautl -decrypt -inkey ${MY_PVTKEY} -in ${FILE} > ${OUTFILE}
