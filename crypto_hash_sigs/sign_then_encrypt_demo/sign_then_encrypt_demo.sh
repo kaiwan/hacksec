@@ -6,6 +6,13 @@
 set -euo pipefail
 
 name=$(basename $0)
+die() { 
+  echo >&2 "FATAL:${name}: $*" ; exit 1
+}
+warn() {
+  echo >&2 "WARNING:${name}: $*"
+}
+
 KEYS_DIR=keys_dir
 IMG=secret.txt
 SIGNFILE=image.sig
@@ -134,8 +141,7 @@ and sent along with the original (plaintext/encrypted) file to the recipient."
 shift
 
 [[ "$1" != "alice" ]] && [[ "$1" != "bob" ]] && {
-	echo "*** Person can be either 'alice' or 'bob' only"
-	exit 1
+	die "Person can be either 'alice' or 'bob' only"
 }
 [[ "$1" = "alice" ]] && {
   PERSON="alice"
