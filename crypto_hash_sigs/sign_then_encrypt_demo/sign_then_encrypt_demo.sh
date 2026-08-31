@@ -80,7 +80,7 @@ echo "Digitally signing the file \"$1\"..."
 echo "Just FYI: digest = sha256sum of image file:"
 sha256sum ${1}
 openssl dgst -sha256 -sign ${SIGNING_KEY} -out ${SIGNFILE} ${1}
-echo "Signed"
+echo "Signed; signature file is '${SIGNFILE}'"
 }
 
 # Parameters:
@@ -88,7 +88,7 @@ echo "Signed"
 encrypt_file()
 {
 [[ $# -eq 0 ]] && return
-echo "Encrypting the file \"$1\"..."
+#echo "Encrypting the file \"$1\"..."
 openssl pkeyutl -encrypt -inkey ${RECIPIENT_PUBKEY} -pubin -in ${FILE} -out ${FILE}.enc
 #openssl rsautl -encrypt -inkey ${RECIPIENT_PUBKEY} -pubin -in ${FILE} -out ${FILE}.enc
 # "The command rsautl was deprecated in version 3.0. Use 'pkeyutl' instead."
@@ -96,11 +96,12 @@ echo "Encrypted as ${FILE}.enc"
 }
 
 # Parameters:
-#  $1 : image file to verify
+#  $1 : file to verify
+# This should be the decrypted file...
 verify_image()
 {
 #------------ On target device
-# 4. Verification: hash the image, apply public key to signature file ->
+# 4. Verification: hash the image, apply sender's public key to signature file ->
 #    recovers the digest put in by signer
 #  image ──► SHA-256 ──► digest_computed
 #                              │
@@ -114,7 +115,7 @@ verify_image()
 # Must match!
 [[ $# -eq 0 ]] && return
 echo "Verifying the image file \"$1\"..."
-openssl dgst -sha256 -verify ${PUBKEY} -signature ${SIGNFILE} ${1}
+openssl dgst -sha256 -verify ${RECIPIENT_PUBKEY} -signature ${SIGNFILE} ${1}
 }
 
 usage()
@@ -137,18 +138,34 @@ Options:
  -d {file}   : recipient: decrypt the specified file; if successful, it implies
                the file's been CIA'ed (Confidentiality, Integrity, Authenticated)!
 
+ -v {file}   : recipient: apply the signature file on the decrypted image to
+               verify it's integrity; this is actually redundant when using the
+	       sign-then-encrypt approach (as you won't get the correct decrypted
+	       file if integity is compromised, by say an MiTM attack).
+	       Relies on the signature file (image.sig) being sent from sender
+	       as well.
+
  -r          : reset : revert to original  remove keys, signature file
 
+-------------------------------------------------------------------------------
 Suggested order that you can try:
-1. reset                                                          : -r
-2. generate the key pair                                          : -g
-3. digitally sign an image file (f.e., u-boot-img.bin)            : -s img_file
-4. verify it                                                      : -v img_file
-5. run the 'test' option: it will modify the u-boot-img.bin and   : -t img_file
-   try to verify it, which should Fail
-Back to step 1...
+-------------------------------------------------------------------------------
+One-time:
+1. reset (deletes all keys, start afresh)                        : -r
+2. generate the key pairs                                        : -p alice|bob -g
+3. both: exchange your public keys (manually, scp them)
 
-Note: the digital signature is the '${SIGNFILE}' file (gen by step 3); it must be attached
+Sign, encrypt, send:
+4. sender: digitally sign-then-encrypt a file (f.e., secret.txt) : -p alice|bob -s file
+5. sender: transfer it and the signature file to the recipient
+   (manually, scp it)
+
+Decrypt, verify:
+6. recipient: decrypt                                            : -p alice|bob -d file
+7. verify it                                                     : -p alice|bob -v img_file
+
+Back to step 1...
+Note: the digital signature is the '${SIGNFILE}' file (gen by step 4); it must be attached
 and sent along with the original (plaintext/encrypted) file to the recipient."
 }
 
