@@ -151,18 +151,19 @@ Options:
 Suggested order that you can try:
 -------------------------------------------------------------------------------
 One-time:
-1. reset (deletes all keys, start afresh)                        : -r
-2. generate the key pairs                                        : -p alice|bob -g
-3. both: exchange your public keys (manually, scp them)
+1. reset (deletes all keys, start afresh)      : -r
+2. generate the key pairs                      : -p alice|bob -g
+3. both: exchange your public keys
+   (manually, scp them)
 
 Sign, encrypt, send:
-4. sender: digitally sign-then-encrypt a file (f.e., secret.txt) : -p alice|bob -s file
-5. sender: transfer it and the signature file to the recipient
-   (manually, scp it)
+4. sender: digitally sign-then-encrypt a file  : -p alice|bob -s file
+5. sender: transfer it and the signature file
+   to the recipient (manually, scp it)
 
 Decrypt, verify:
-6. recipient: decrypt                                            : -p alice|bob -d file
-7. verify it                                                     : -p alice|bob -v img_file
+6. recipient: decrypt                          : -p alice|bob -d file
+7. verify it                                   : -p alice|bob -v (decrypted)file
 
 Back to step 1...
 Note: the digital signature is the '${SIGNFILE}' file (gen by step 4); it must be attached
