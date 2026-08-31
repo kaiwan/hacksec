@@ -120,19 +120,23 @@ openssl dgst -sha256 -verify ${PUBKEY} -signature ${SIGNFILE} ${1}
 usage()
 {
 	echo "Usage: ${name} -p {alice|bob} {-option} [file]
- -p {person} : first parameter: MUST be passed as 'alice' or 'bob'
+
+ -p {person} : always the first parameter (except for -r):
+               MUST be passed as 'alice' or 'bob'
 
 Options:
- -g          : one-time: generate private and public key pairs for Alice & Bob (asymmetric keys)
+ -g          : one-time: generate private and public key pairs for Alice & Bob
+               (asymmetric keys)
              : Here, the -p 'person' option doesn't really matter...
              : (Alice & Bob must then exchange their public keys)
 
- -s {file}   : prepare for send (via sign-then-encrypt) the specified file to the recipient
+ -s {file}   : sender: prepare to 'send' (via sign-then-encrypt) the specified
+               file to the recipient; we don't actually 'send' anything; you do
+	       that over scp... here we sign-then-encrypt the given file
 
- -d {file}   : decrypt the specified file
- -v {file}   : verify the specified file
+ -d {file}   : recipient: decrypt the specified file; if successful, it implies
+               the file's been CIA'ed (Confidentiality, Integrity, Authenticated)!
 
- -t {file}   : test  : deliberately modify the file and try to verify; should FAIL verification
  -r          : reset : revert to original  remove keys, signature file
 
 Suggested order that you can try:
@@ -218,7 +222,7 @@ case "${opt}" in
 		usage ; exit 1
 	}
 	FILE="$2" # the .enc file
-	OUTFILE="${FILE%.enc}"
+	OUTFILE="${FILE%.enc}"  # rm the .enc
 	rm -f ${OUTFILE}
 	openssl pkeyutl -decrypt -inkey ${MY_PVTKEY} -in ${FILE} > ${OUTFILE}
 	#openssl rsautl -decrypt -inkey ${MY_PVTKEY} -in ${FILE} > ${OUTFILE}
@@ -233,20 +237,6 @@ case "${opt}" in
 	}
 	verify_image "$2"
 	;;
- -t)
-	[[ $# -ne 2 ]] && {
-		usage ; exit 1
-	}
-	# change boot order!
-	sed -i 's,boot_targets=mmc1 mmc0 usb pxe dhcp,boot_targets=usb mmc0 mmc1 pxe dhcp,' u-boot-img.bin
-	diff u-boot-img.bin u-boot-img.bin.orig || true
-	verify_image ${2}
-	;;
-# -r)
-#	rm -rf ${KEYS_DIR}
-#	echo "Reset done"
-#	#diff u-boot-img.bin u-boot-img.bin.orig
-#	;;
  *)     usage ; exit 1
 	;;
 esac
