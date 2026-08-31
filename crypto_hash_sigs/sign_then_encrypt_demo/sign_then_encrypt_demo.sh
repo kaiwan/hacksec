@@ -1,4 +1,5 @@
 #!/bin/bash
+# ref: https://opensource.com/article/21/4/encryption-decryption-openssl
 
 # Turn on unofficial Bash 'strict mode'! V useful
 # "Convert many kinds of hidden, intermittent, or subtle bugs into immediate, glaringly obvious errors"
@@ -49,19 +50,23 @@ echo "
 Generating keys for ${PERSON} ..."
 gen_keys_for ${PERSON}
 
-#echo "
-#Generating keys for Bob ..."
+echo "
+Before proceeding further, first ensure you exchange your public key with your peer
+(save it as:
+ Alice: ~/.ssh/bob_pubkey.pem
+ Bob  : ~/.ssh/alice_pubkey.pem
+)"
 #gen_keys_for bob
 }
 
 # Parameters:
-#  $1 : image file to sign
-digitally_sign_image()
+#  $1 : file to sign
+digitally_sign_file()
 {
 [[ $# -eq 0 ]] && return
 # 3. Hash (SHA256) the image file and Sign the digest with the pvt key
 #              ┌──────────────┐
-#  image  ───► │  SHA-256     │ ──► digest (32 bytes, fixed)
+#   file  ───► │  SHA-256     │ ──► digest (32 bytes, fixed)
 #              └──────────────┘
 #                     │
 #                     ▼
@@ -72,8 +77,18 @@ digitally_sign_image()
 echo "Digitally signing the file \"$1\"..."
 echo "Just FYI: digest = sha256sum of image file:"
 sha256sum ${1}
-openssl dgst -sha256 -sign ${PVTKEY} -out ${SIGNFILE} ${1}
+openssl dgst -sha256 -sign ${SIGNING_KEY} -out ${SIGNFILE} ${1}
 echo "Signed"
+}
+
+# Parameters:
+#  $1 : file to sign
+encrypt_file()
+{
+[[ $# -eq 0 ]] && return
+echo "Encrypting the file \"$1\"..."
+openssl rsautl -encrypt -inkey ${RECIPIENT_PUBKEY} -pubin -in ${FILE} -out ${FILE}.enc
+echo "Encrypted as ${FILE}.enc"
 }
 
 # Parameters:
@@ -101,17 +116,22 @@ openssl dgst -sha256 -verify ${PUBKEY} -signature ${SIGNFILE} ${1}
 usage()
 {
 	echo "Usage: ${name} -p {alice|bob} {-option} [file]
- -p {person} : must be 'alice' or 'bob'
+ -p {person} : first parameter: MUST be passed as 'alice' or 'bob'
+
 Options:
  -g          : one-time: generate private and public key pairs for Alice & Bob (asymmetric keys)
              : Here, the -p 'person' option doesn't really matter...
              : (Alice & Bob must then exchange their public keys)
+
+ -s {file}   : send (via sign-then-encrypt) the specified file to the recipient
+
  -s {file}   : sign the specified file
  -e {file}   : encrypt the specified file
  -d {file}   : decrypt the specified file
  -v {file}   : verify the specified file
+
  -t {file}   : test  : deliberately modify the file and try to verify; should FAIL verification
- -r              : reset : revert to original  remove keys, signature file
+ -r          : reset : revert to original  remove keys, signature file
 
 Suggested order that you can try:
 1. reset                                                          : -r
@@ -145,13 +165,14 @@ shift
 }
 [[ "$1" = "alice" ]] && {
   PERSON="alice"
-  #PVTKEY=${KEYS_DIR}/alice_privkey.pem
-  #PUBKEY=${KEYS_DIR}/alice_pubkey.pem
+  SIGNING_KEY=keys_dir/alice_privkey.pem
+  RECIPIENT_PUBKEY=~/.ssh/bob_pubkey.pem
+  [[ ! -f ${RECIPIENT_PUBKEY} ]] && die "Recipient's public key not found. First generate the keys and exchange them"
 }
 [[ "$1" = "bob" ]] && {
   PERSON="bob"
-  #PVTKEY=${KEYS_DIR}/bob_privkey.pem
-  #PUBKEY=${KEYS_DIR}/bob_pubkey.pem
+  SIGNING_KEY=keys_dir/bob_privkey.pem
+  RECIPIENT_PUBKEY=~/.ssh/alice_pubkey.pem
 }
 
 shift
@@ -160,11 +181,20 @@ case "${opt}" in
  -g)
 	gen_keys
 	;;
- -s)
+ -s)                           # sign-then-encrypt
 	[[ $# -ne 2 ]] && {
 		usage ; exit 1
 	}
-	digitally_sign_image "$2"
+	FILE="$2"
+	digitally_sign_file ${FILE}
+	#---
+	# NOTE! We CAN skip the encryption; we then have a signed plaintext file
+	#  (the signature image.sig Must be attached when sending to the recipient).
+	# If we DO encrypt it - via the classic sign-then-encrypt - then we have a
+	# signed encrypted file
+	encrypt_file ${FILE}
+
+	# send ${FILE}.enc to recipient, typically via scp
 	;;
  -v)
 	[[ $# -ne 2 ]] && {
