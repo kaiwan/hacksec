@@ -51,8 +51,10 @@ Generating keys for ${PERSON} ..."
 gen_keys_for ${PERSON}
 
 echo "
-Before proceeding further, first ensure you exchange your public key with your peer
-(save it like this:
+Before proceeding further, first ensure you exchange your public key with your peer;
+(for Alice, like this perhaps: scp keys_dir/alice_pubkey.pem  bob@<IPaddr>:~/.ssh/
+  and vice-versa.)
+(Save it like this:
  If you're Alice : ~/.ssh/bob_pubkey.pem
  If you're Bob   : ~/.ssh/alice_pubkey.pem
 )"
@@ -149,6 +151,11 @@ and sent along with the original (plaintext/encrypted) file to the recipient."
 
 #--- 'main'
 set +u
+[[ "$1" = "-r" ]] && {
+	rm -rf ${KEYS_DIR}
+	echo "Reset done"
+	exit 0
+}
 [[ "$1" != "-p" ]] && {
 	echo "*** First parameter must be '-p {alice|bob}'
 "
@@ -235,12 +242,11 @@ case "${opt}" in
 	diff u-boot-img.bin u-boot-img.bin.orig || true
 	verify_image ${2}
 	;;
- -r)
-	rm -f *.pem *.sig || true
-	cp u-boot-img.bin.orig u-boot-img.bin
-	echo "Reset done"
-	diff u-boot-img.bin u-boot-img.bin.orig
-	;;
+# -r)
+#	rm -rf ${KEYS_DIR}
+#	echo "Reset done"
+#	#diff u-boot-img.bin u-boot-img.bin.orig
+#	;;
  *)     usage ; exit 1
 	;;
 esac
