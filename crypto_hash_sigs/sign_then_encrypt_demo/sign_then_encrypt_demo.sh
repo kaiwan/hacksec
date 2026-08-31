@@ -87,7 +87,9 @@ encrypt_file()
 {
 [[ $# -eq 0 ]] && return
 echo "Encrypting the file \"$1\"..."
-openssl rsautl -encrypt -inkey ${RECIPIENT_PUBKEY} -pubin -in ${FILE} -out ${FILE}.enc
+openssl pkeyutl -encrypt -inkey ${RECIPIENT_PUBKEY} -pubin -in ${FILE} -out ${FILE}.enc
+#openssl rsautl -encrypt -inkey ${RECIPIENT_PUBKEY} -pubin -in ${FILE} -out ${FILE}.enc
+# "The command rsautl was deprecated in version 3.0. Use 'pkeyutl' instead."
 echo "Encrypted as ${FILE}.enc"
 }
 
@@ -196,6 +198,14 @@ case "${opt}" in
 
 	# send ${FILE}.enc to recipient, typically via scp
 	;;
+	rm -f ${OUTFILE}
+	openssl pkeyutl -decrypt -inkey ${MY_PVTKEY} -in ${FILE} > ${OUTFILE}
+	#openssl rsautl -decrypt -inkey ${MY_PVTKEY} -in ${FILE} > ${OUTFILE}
+	# "The command rsautl was deprecated in version 3.0. Use 'pkeyutl' instead."
+	# Due to the 'set -euo pipefail', it will abort if the above cmd fails
+	echo "Successfully decrypted as ${OUTFILE}"
+	;;
+
  -v)
 	[[ $# -ne 2 ]] && {
 		usage ; exit 1
