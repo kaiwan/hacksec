@@ -3,11 +3,11 @@
 
 # Turn on unofficial Bash 'strict mode'! V useful
 # "Convert many kinds of hidden, intermittent, or subtle bugs into immediate, glaringly obvious errors"
-# ref: http://redsymbol.net/articles/unofficial-bash-strict-mode/ 
+# ref: http://redsymbol.net/articles/unofficial-bash-strict-mode/
 set -euo pipefail
 
 name=$(basename $0)
-die() { 
+die() {
   echo >&2 "FATAL:${name}: $*" ; exit 1
 }
 warn() {
@@ -193,6 +193,7 @@ shift
 [[ "$1" != "alice" ]] && [[ "$1" != "bob" ]] && {
 	die "Person can be either 'alice' or 'bob' only"
 }
+# This (below) is the crucial thing - we assign the keys to use
 [[ "$1" = "alice" ]] && {
   PERSON="alice"
   MY_PVTKEY=keys_dir/alice_privkey.pem
