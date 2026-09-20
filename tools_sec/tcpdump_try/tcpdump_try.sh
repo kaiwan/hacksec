@@ -26,13 +26,13 @@ runcmd()
 download_a_file()
 {
   local URL=https://www.kernel.org/pub/linux/kernel/v7.x/linux-7.0.8.tar.xz
-  timeout ${TIMEOUT} wget ${URL} -O /tmp/$(basename ${URL})
+  timeout ${TIMEOUT}s wget ${URL} -O /tmp/$(basename ${URL})
   echo "-- wget killed ($?)"
 }
 
 
 #-- 'main'
-TIMEOUT=15s
+TIMEOUT=15
 download_a_file &
 
 # let's capture web traffic (ports 80 or 443) on n/w interface INTF
