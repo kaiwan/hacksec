@@ -1,0 +1,30 @@
+From 3187ae0ef6034581dde6a1eeb8ce7d1869b39ca8 Mon Sep 17 00:00:00 2001
+From: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+Date: Thu, 23 Jul 2026 16:48:14 +0530
+Subject: [PATCH] am62x: bootcmd env var to select sdcard-then-emmc
+
+Signed-off-by: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+---
+ board/ti/am62x/am62x.env | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/board/ti/am62x/am62x.env b/board/ti/am62x/am62x.env
+index c80ad8e1685..8188e045d73 100644
+--- a/board/ti/am62x/am62x.env
++++ b/board/ti/am62x/am62x.env
+@@ -21,6 +21,12 @@ bootpart=1:2
+ bootdir=/boot
+ rd_spec=-
+ 
++# --- KNB: TESTING: try SD (mmc1) first, then eMMC (mmc0). ---
++# MMC device numbers per `mmc list`: SD=1, eMMC=0 on AM62x-SK
++try_boot_mmc=if mmc dev ${mmcdev} && mmc rescan; then setenv bootpart ${mmcdev}:2; run init_mmc; if run get_fit_mmc; then run get_fit_overlaystring; run run_fit; fi; fi
++bootcmd_sd_then_emmc=setenv mmcdev 1; run try_boot_mmc; setenv mmcdev 0; run try_boot_mmc
++bootcmd=run bootcmd_sd_then_emmc
++
+ splashfile=ti_logo_414x97_32bpp.bmp.gz
+ splashimage=0x80200000
+ splashpos=m,m
+
+ Upstream-Status: Inappropriate [wip]
+
