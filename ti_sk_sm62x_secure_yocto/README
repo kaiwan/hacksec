@@ -1,0 +1,8 @@
+An attempt at securing the TI SK AM62x board.
+Goals 
+ - setup the Secure Boot chain
+ - encrypt-at-rest
+
+Target: TI SK AM62x HSFS part
+
+Yocto ver: Wrynose 6.0
