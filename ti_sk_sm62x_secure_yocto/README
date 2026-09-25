@@ -6,3 +6,23 @@ Goals
 Target: TI SK AM62x HSFS part
 
 Yocto ver: Wrynose 6.0
+
+Current layer set:
+$ bitbake-layers show-layers
+NOTE: Starting bitbake server...
+layer                 path                                                                    priority
+========================================================================================================
+core                           	   <...>/upstream_layers/openembedded-core/meta        	5
+arm-toolchain         	   <...>/upstream_layers/meta-arm/meta-arm-toolchain   	5
+meta-arm                	   <...>/upstream_layers/meta-arm/meta-arm             		5
+meta-ti-bsp             	   <...>/upstream_layers/meta-ti/meta-ti-bsp           		6
+meta-ti-extras        	   <...>/upstream_layers/meta-ti/meta-ti-extras        		6
+bsp                           	   <...>/myprj_layers/meta-bsp                         				9
+workspacelayer        	   <...>/build_am62xx/workspace                        		      99
+meta-generic-stuff         <...>/myprj_layers/meta-generic-stuff               			8
+openembedded-layer    <...>/upstream_layers/meta-openembedded/meta-oe     	5
+security              	 	  <...>/upstream_layers/meta-security                 			8
+perl-layer            		  <...>/upstream_layers/meta-openembedded/meta-perl       5
+meta-python           	  <...>/upstream_layers/meta-openembedded/meta-python  5
+
+
