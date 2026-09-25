@@ -21,15 +21,24 @@ echo "$@"
 eval "$@" 
 }
 
+PFX=deploy-ti/images/am62xx-evm
 # The .wic file's compressed, uncompress it
-WICFILE=core-image-minimal-am62xx-evm.rootfs.wic
-rm -f deploy-ti/images/am62xx-evm/${WICFILE} || true
-runcmd "xz -dk deploy-ti/images/am62xx-evm/${WICFILE}.xz"
-ls -lh deploy-ti/images/am62xx-evm/${WICFILE}
+WICFILE=${PFX}/core-image-minimal-am62xx-evm.rootfs.wic
+rm -f ${WICFILE} || true
+runcmd "xz -dk ${WICFILE}.xz"
+ls -lh ${WICFILE}
+runcmd "fdisk -l ${WICFILE}"
 
-echo "Proceed? SDcard * /dev/sda * ready? " ; read
-runcmd "sync ; sudo umount /dev/sda[12] || true"
-runcmd "sync ; time sudo dd if=deploy-ti/images/am62xx-evm/${WICFILE} of=/dev/sda bs=4M conv=fsync"
+echo "Proceed? SDcard * /dev/sda * ready?
+
+*** NOTE ***
+
+Assuming that /dev/sda is the correct disk to write to.
+CONFIRM before going ahead please
+"
+read
+runcmd "sync ; sudo umount /dev/sda[123] || true"
+runcmd "sync ; time sudo dd if=${WICFILE} of=/dev/sda bs=4M conv=fsync"
 
 echo "done, unmounting..."
-runcmd "sync ; sudo umount /dev/sda[12] ; sync"
+runcmd "sync ; sudo umount /dev/sda[123] ; sync"
