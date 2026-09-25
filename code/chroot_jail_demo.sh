@@ -10,12 +10,12 @@ fi
 
 # 1. Configuration
 JAIL_DIR="/var/chroot_jail"
-COMMANDS=(bash ls pwd mkdir rm cp touch cat grep)
+COMMANDS=(bash ls ps pwd mkdir rm cp touch cat grep)
 
 echo "=== Initializing Chroot Jail at $JAIL_DIR ==="
 
 # 2. Create base directory structure
-mkdir -p "$JAIL_DIR"/{bin,etc,lib,lib64,usr/bin,usr/lib}
+mkdir -p "$JAIL_DIR"/{bin,etc,lib,lib64,proc,usr/bin,usr/lib}
 
 # Helper function to find and copy dependencies; mostly shlibs
 copy_deps() {
@@ -58,8 +58,12 @@ done
 
 # 4. Copy basic identity configuration files for terminal readability
 cp /etc/passwd /etc/group "$JAIL_DIR/etc/" 2>/dev/null
+sudo mount -t proc proc ${JAIL_DIR}/proc  # for ps, etc
 
 echo "=== Chroot Jail Built Successfully! ==="
 echo "You can now enter the jail by running:"
 echo "sudo chroot $JAIL_DIR /usr/bin/bash"
 
+echo "
+REMEMBER: when done
+sudo umount ${JAIL_DIR}/proc"
